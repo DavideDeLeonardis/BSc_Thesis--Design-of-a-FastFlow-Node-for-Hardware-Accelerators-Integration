@@ -1,6 +1,6 @@
-//
+// ----------------------------------------
 // MacOS
-//
+// ----------------------------------------
 
 Benchmark con N = 10000 (100 task)
    # --- CPU (FastFlow) ---
@@ -50,9 +50,12 @@ Benchmark con N = 7,449,999 (100 task)
    ./build/tesi-exec 7449999 100 gpu_metal kernels/gpu/polynomial_op.metal
    ./build/tesi-exec 7449999 100 gpu_metal kernels/gpu/heavy_compute_kernel.metal
 
-//
+
+
+
+// ----------------------------------------
 // VM Pianosa Linux
-//
+// ----------------------------------------
 
 Benchmark con N = 10000 (100 task)
    # --- CPU (FastFlow) ---
