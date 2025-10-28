@@ -22,17 +22,17 @@ cmake -B build && cmake --build build
 
 ### Esecuzione
 
-L'eseguibile accetta tre argomenti opzionali: [N] [NUM_TASKS] [DEVICE] [KERNEL_PATH].
+L'eseguibile accetta 4 argomenti opzionali: [N] [NUM_TASKS] [DEVICE] [KERNEL].
 
 ```
 # Esecuzione su CPU (con ff::parallel_for)
 ./build/tesi-exec 1000000 100 cpu_ff
 
 # Esecuzione su CPU (con OpenMP)
-./build/tesi-exec 1000000 100 cpu_omp
+./build/tesi-exec 1000000 100 cpu_omp vecAdd
 
 # Esecuzione su FPGA
-./build/tesi-exec 1000000 100 fpga
+./build/tesi-exec 1000000 100 fpga ./vecAdd.xclbin
 ```
 
 <br>
@@ -49,7 +49,7 @@ cmake -B build && cmake --build build
 
 ### Esecuzione
 
-L'eseguibile accetta tre argomenti opzionali: [N] [NUM_TASKS] [DEVICE] [KERNEL_PATH].
+L'eseguibile accetta 4 argomenti opzionali: [N] [NUM_TASKS] [DEVICE] [KERNEL].
 
 ```
 # Esecuzione su CPU (con ff::parallel_for)
@@ -59,5 +59,5 @@ L'eseguibile accetta tre argomenti opzionali: [N] [NUM_TASKS] [DEVICE] [KERNEL_P
 ./build/tesi-exec 16777216 100 gpu_opencl
 
 # Esecuzione su GPU (Metal)
-./build/tesi-exec 16777216 100 gpu_metal
+./build/tesi-exec 16777216 100 gpu_metal ./vecAdd.ml
 ```
