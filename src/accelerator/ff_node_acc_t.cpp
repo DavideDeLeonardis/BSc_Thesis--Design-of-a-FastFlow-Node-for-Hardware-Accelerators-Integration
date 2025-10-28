@@ -60,7 +60,7 @@ void *ff_node_acc_t::svc(void *task) {
       return FF_EOS;
    }
 
-   // Ora di arrivo del task nel nodo.
+   // Imposta l'ora di arrivo del task nel nodo.
    static_cast<Task *>(task)->arrival_time = std::chrono::steady_clock::now();
 
    inQ_.push(task);
@@ -120,18 +120,16 @@ void ff_node_acc_t::consumerLoop() {
 
       // Calcola il tempo nel nodo per questo task.
       auto inNode_duration =
-         std::chrono::duration_cast<std::chrono::nanoseconds>(
-            end_time - task->arrival_time);
+         std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - task->arrival_time);
 
       // Calcola il tempo dall'ultimo completamento.
       if (!first_task) {
          auto inter_completion_duration =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(
-               end_time - last_completion_time);
+            std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - last_completion_time);
          stats_->inter_completion_time_ns += inter_completion_duration.count();
-      } else {
+      } else
          first_task = false;
-      }
+
       last_completion_time = end_time;
 
       // Aggiorna le statistiche.
