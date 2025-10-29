@@ -1,5 +1,4 @@
 #include "ff_node_acc_t.hpp"
-#include <iostream>
 
 /**
  * @brief Implementazione del nodo FastFlow che orchestra l'offloading.
