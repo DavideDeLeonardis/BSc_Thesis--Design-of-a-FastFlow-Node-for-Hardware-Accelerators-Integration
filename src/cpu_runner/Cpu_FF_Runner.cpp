@@ -1,5 +1,6 @@
 #include "Cpu_FF_Runner.hpp"
 #include <chrono>
+#include <cmath>
 #include <iostream>
 #include <vector>
 

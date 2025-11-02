@@ -34,7 +34,7 @@ Capitolo 3: Progettazione dell'Architettura Software
 Descrivere l'architettura del main come "dispatcher" che seleziona il percorso di esecuzione (CPU vs. Acceleratore) in base agli input.
 3.2 L'Interfaccia IAccelerator: Il Contratto di Astrazione
 Spiegare l'importanza di un'interfaccia pura per disaccoppiare la logica della pipeline dall'hardware specifico.
-3.3 Architettura 1: Esecuzione Parallela su CPU
+3.3 Architettura 1: Esecuzione Parallela su CPU - Desing pattern usato
 Spiegare il design dei "Runner" (executeCpuFFTasks, executeCpuOMPTasks) e perché sono sequenziali a livello di task ma paralleli a livello di dati.
 3.4 Architettura 2: La Pipeline di Offloading (ff_node_acc_t)
 Il Problema del Design: Come gestire l'offloading asincrono e "stateful" (con stato) all'interno di un nodo FastFlow?
