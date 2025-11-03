@@ -13,10 +13,6 @@
  *
  * !! Stiamo eseguendo i task in parallelo sull'acceleratore, ma stiamo serializzando la
  * !! finalizzazione e il download, e ciò ci permette di riutilizzare lo stesso buffer di output.
- *
- * ! TODO: Eliminare duplicazione estrema in FpgaAccelerator e GpuAccelerator.
- * ! TODO: Rendere eseguibile qualsiasi kernel con qualsiasi tipo di dato
- * !    tramite i vardic template (molto complesso).
  */
 class IAccelerator {
  public:
