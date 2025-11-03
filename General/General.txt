@@ -23,7 +23,7 @@ L'account è deleonardis, la macchina è
 
 
 DONE!!!!!! ----- DEVO ANCORA RIUTILIZZARE I BUFFER di memoria sulla GPU/FPGA (su CPU sono riutilizzati):
-   Spostare l'Allocazione: Spostare le chiamate clCreateBuffer dal metodo execute() al metodo initialize() degli adapter. I cl_mem (bufferA, bufferB, bufferC) diventerebbero membri privati delle classi GpuAccelerator e FpgaAccelerator.
+   Spostare l'Allocazione: Spostare le chiamate clCreateBuffer dal metodo execute() al metodo initialize() degli adapter. I cl_mem (bufferA, bufferB, bufferC) diventerebbero membri privati delle classi GpuAccelerator e Fpga_Accelerator.
    Semplificare execute: Il metodo execute() non dovrebbe più allocare e deallocare, ma solo orchestrare i trasferimenti di dati (Write, Read) e l'esecuzione del kernel, usando i buffer pre-allocati.
    Spostare la Deallocazione: Le chiamate clReleaseMemObject andrebbero spostate nel distruttore degli adapter.
 
@@ -72,7 +72,7 @@ Punti chiave da ricordare:
    v++ -l --platform xilinx_u50_gen3x16_xdma_5_202210_1 --target sw_emu -o krnl_vadd.sw_emu.xclbin kernels/krnl_vadd.sw_emu.xo
 
    export XCL_EMULATION_MODE=sw_emu
-   Modifica nome .xclbin in FpgaAccelerator in kernels/krnl_vadd.sw_emu.xclbin
+   Modifica nome .xclbin in Fpga_Accelerator in kernels/krnl_vadd.sw_emu.xclbin
    rm -rf build; cmake -B build && cmake --build build && ./build/tesi-exec 1000000 7 fpga
 
 // COMPILAZIONE E LINKING SU FPGA se voglio usare HARDWARE EMULATION per ottenere xclbin (in dir Tesi) ----> e poi voglio usare VITIS ANALYZER       (Usa N piccoli)    ----> NON FUNZIONA!
@@ -83,7 +83,7 @@ Punti chiave da ricordare:
          "customized with software release 2022.1": Questo componente è stato creato e testato con la versione 2022.1 degli strumenti Xilinx.
          "has a different revision in the IP Catalog": La versione degli strumenti Vitis/Vivado che sta usando attualmente (probabilmente una più recente come la 2023.x) ha una versione più nuova di quel componente.
    export XCL_EMULATION_MODE=hw_emu
-   Modifica nome .xclbin in FpgaAccelerator in kernels/krnl_vadd.hw_emu.xclbin
+   Modifica nome .xclbin in Fpga_Accelerator in kernels/krnl_vadd.hw_emu.xclbin
    rm -rf build; cmake -B build && cmake --build build && ./build/tesi-exec 1000000 7 fpga
    vitis_analyzer xrt.run_summary
 
@@ -229,11 +229,11 @@ File da Modificare
    };
    Anche la struct Result potrebbe dover cambiare se il risultato fosse più complesso.
 
-   3. Le Classi "Adapter" (Cpu/Gpu/FpgaAccelerator.cpp)
+   3. Le Classi "Adapter" (Cpu/Gpu/Fpga_Accelerator.cpp)
    Qui è dove "collegheresti" il nuovo task e il nuovo kernel. Ogni adapter andrebbe modificato.
    CpuAccelerator.cpp:
    Nel metodo execute, la chiamata a std::transform verrebbe sostituita con due cicli for annidati per eseguire la moltiplicazione di matrici sulla CPU.
-   GpuAccelerator.cpp e FpgaAccelerator.cpp:
+   GpuAccelerator.cpp e Fpga_Accelerator.cpp:
    Nel metodo initialize, cambieresti il nome del file del kernel da caricare (es. matrix_mul.cl o il nuovo .xclbin) e il nome del kernel da estrarre (es. "matrix_mul").
    Nel metodo execute, faresti le modifiche più sostanziose:
    Faresti il cast del puntatore generic_task al nuovo tipo MatrixMulTask*.

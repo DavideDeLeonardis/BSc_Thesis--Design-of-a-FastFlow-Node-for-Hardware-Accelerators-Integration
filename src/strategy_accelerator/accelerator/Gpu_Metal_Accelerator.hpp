@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 
-// Forward declaration per la classe MetalBufferManager.
 class MetalBufferManager;
 
 /**

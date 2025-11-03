@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../../include/ff_includes.hpp"
-#include "../accelerator/IAccelerator.hpp"
 #include "../common/BlockingQueue.hpp"
 #include "../common/StatsCollector.hpp"
 #include "../common/Task.hpp"
+#include "../strategy_accelerator/accelerator/IAccelerator.hpp"
 #include <atomic>
 #include <future>
 #include <iostream>
@@ -15,13 +15,12 @@
  * @brief Nodo FastFlow che orchestra l'offloading su un acceleratore.
  *
  * Implementa una pipeline interna a 2 stadi gestita da 2 thread:
- * 1. Producer (Upload+Launch): Trasferisce i dati dall'host al device e
- *   avvia l'esecuzione del kernel.
+ * 1. Producer (Upload+Launch): Trasferisce i dati dall'host al device e avvia l'esecuzione del
+ * kernel.
  * 2. Consumer (Download): Trasferisce i risultati dal device all'host.
  *
- * Permette di sovrapporre le operazioni di I/O con il calcolo, nella pipeline
- * il task 'n' è in esecuzione, mentre i dati per 'n+1' vengono caricati e i
- * risultati di 'n-1' vengono scaricati.
+ * Permette di sovrapporre le operazioni di I/O con il calcolo, nella pipeline il task 'n' è in
+ * esecuzione, mentre i dati per 'n+1' vengono caricati e i risultati di 'n-1' vengono scaricati.
  */
 class ff_node_acc_t : public ff_node {
  public:
@@ -34,8 +33,7 @@ class ff_node_acc_t : public ff_node {
    void svc_end() override;
 
  private:
-   // Sentinella usata per segnalare la fine dello stream di dati nelle code
-   // interne ai thread.
+   // Sentinella usata per segnalare la fine dello stream di dati nelle code interne ai thread.
    static void *const SENTINEL;
 
    // Loops dei 2 stadi della pipeline interna.
@@ -46,8 +44,8 @@ class ff_node_acc_t : public ff_node {
    IAccelerator *accelerator_;
    StatsCollector *stats_;
 
-   // Code per i task in ingresso dalla pipeline FF e per i task pronti per
-   // il download dal device all'host.
+   // Code per i task in ingresso dalla pipeline FF e per i task pronti per il download dal device
+   // all'host.
    BlockingQueue<void *> inQ_;
    BlockingQueue<void *> readyQ_;
 

@@ -1,4 +1,5 @@
 #include "Helpers.hpp"
+
 #include <algorithm>
 #include <iostream>
 
@@ -111,28 +112,27 @@ void print_usage(const char *prog_name) {
 /**
  * @brief Calcola le metriche di performance finali a partire dai dati grezzi.
  */
-PerformanceData calculate_metrics(long long elapsed_ns, long long computed_ns,
-                                  long long total_InNode_time_ns,
-                                  long long inter_completion_time_ns, size_t final_count) {
+PerformanceData calculate_metrics(const ComputeResult &results) {
 
    PerformanceData metrics;
-   if (final_count == 0)
+   if (results.tasks_completed == 0)
       return metrics;
 
    // Tempo medio tra il completamento di due task consecutivi (in ms).
-   if (final_count > 1)
-      metrics.avg_service_time_ms = (inter_completion_time_ns / (final_count - 1)) / 1.0e6;
+   if (results.tasks_completed > 1)
+      metrics.avg_service_time_ms =
+         (results.inter_completion_time_ns / (results.tasks_completed - 1)) / 1.0e6;
 
    // Tempo totale che la pipeline impiega per processare tutti i task (in sec).
-   metrics.elapsed_s = elapsed_ns / 1.0e9;
+   metrics.elapsed_s = results.elapsed_ns / 1.0e9;
    // Tempo medio per un task dall'ingresso all'uscita del nodo (in ms).
-   metrics.avg_InNode_time_ms = (total_InNode_time_ns / final_count) / 1.0e6;
+   metrics.avg_InNode_time_ms = (results.total_InNode_time_ns / results.tasks_completed) / 1.0e6;
    // Tempo medio del singolo calcolo sull'acceleratore, senza overhead (in ms).
-   metrics.avg_computed_ms = (computed_ns / final_count) / 1.0e6;
+   metrics.avg_computed_ms = (results.computed_ns / results.tasks_completed) / 1.0e6;
    // Costo medio di gestione: trasferimento dati, uso delle code, etc.
    metrics.avg_overhead_ms = metrics.avg_InNode_time_ms - metrics.avg_computed_ms;
    // Task totali processati al secondo.
-   metrics.throughput = (metrics.elapsed_s > 0) ? (final_count / metrics.elapsed_s) : 0;
+   metrics.throughput = (metrics.elapsed_s > 0) ? (results.tasks_completed / metrics.elapsed_s) : 0;
 
    return metrics;
 }

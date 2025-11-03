@@ -28,14 +28,14 @@ package "Client" {
     + main()
   }
 
-  class RunnerStrategy_Factory <<factory>> {
-    + {static} create_runner_strategy(type, ...) : IRunnerStrategy*
+  class DeviceRunner_Factory <<factory>> {
+    + {static} create_runner_for_device(type, ...) : IDeviceRunner*
   }
 }
 
 ' === 2. L'Interfaccia Comune e le Struct Dati ===
 package "Interfaccia Comune" {
-  interface IRunnerStrategy {
+  interface IDeviceRunner {
     + {abstract} execute(N, NUM_TASKS) : ComputeResult
   }
 
@@ -52,29 +52,29 @@ package "Interfaccia Comune" {
     + buffer_idx : size_t
   }
   
-  IRunnerStrategy ..> ComputeResult : "restituisce"
+  IDeviceRunner ..> ComputeResult : "restituisce"
 }
 
 ' === 3. Famiglia 1: Strategie CPU ===
 ' (Rimosso il package esterno "Implementazioni delle Strategie")
 package "Strategie CPU" {
-  abstract class AbstractCpuStrategy {
+  abstract class AbstractCpuRunner {
     # {abstract} execute_parallel_loop(start, end)
     # execute_kernel_work(i)
     ---
     + execute(N, NUM_TASKS) : ComputeResult
   }
-  class CpuOmpStrategy {
+  class Cpu_OMP_Runner {
     # execute_parallel_loop(start, end)
   }
-  class CpuFfStrategy {
+  class Cpu_FF_Runner {
     # execute_parallel_loop(start, end)
   }
 }
 
 ' === 4. Famiglia 2: Strategie Acceleratore (Adattatore) ===
 package "Strategie Acceleratore" {
-  class AcceleratorPipelineStrategy {
+  class AcceleratorPipelineRunner {
     - accelerator : IAccelerator*
     ---
     + execute(N, NUM_TASKS) : ComputeResult
@@ -107,32 +107,32 @@ package "Logica Hardware (IAccelerator)" {
   }
   
   class Gpu_OpenCL_Accelerator
-  class FpgaAccelerator
+  class Fpga_Accelerator
   class Gpu_Metal_Accelerator
   
   IAccelerator <|-- Gpu_OpenCL_Accelerator
-  IAccelerator <|-- FpgaAccelerator
+  IAccelerator <|-- Fpga_Accelerator
   IAccelerator <|-- Gpu_Metal_Accelerator
 }
 
 
 ' === Relazioni Principali (collegano i package) ===
-main ..> RunnerStrategy_Factory : "usa"
-main ..> IRunnerStrategy : "usa"
-RunnerStrategy_Factory ..> IRunnerStrategy : "crea"
+main ..> DeviceRunner_Factory : "usa"
+main ..> IDeviceRunner : "usa"
+DeviceRunner_Factory ..> IDeviceRunner : "crea"
 
 ' Le strategie implementano l'interfaccia
-IRunnerStrategy <|-- AbstractCpuStrategy
-IRunnerStrategy <|-- AcceleratorPipelineStrategy
+IDeviceRunner <|-- AbstractCpuRunner
+IDeviceRunner <|-- AcceleratorPipelineRunner
 
 ' Dettagli implementazione CPU
-AbstractCpuStrategy <|-- CpuOmpStrategy
-AbstractCpuStrategy <|-- CpuFfStrategy
+AbstractCpuRunner <|-- Cpu_OMP_Runner
+AbstractCpuRunner <|-- Cpu_FF_Runner
 
 ' Dettagli implementazione Acceleratore
-AcceleratorPipelineStrategy o-- "1" IAccelerator : "adatta (has-a)"
-AcceleratorPipelineStrategy ..> ff_node_acc_t : "crea e usa"
-AcceleratorPipelineStrategy ..> StatsCollector : "crea"
+AcceleratorPipelineRunner o-- "1" IAccelerator : "adatta (has-a)"
+AcceleratorPipelineRunner ..> ff_node_acc_t : "crea e usa"
+AcceleratorPipelineRunner ..> StatsCollector : "crea"
 ff_node_acc_t ..> IAccelerator : "usa"
 ff_node_acc_t ..> StatsCollector : "usa (aggiorna)"
 ff_node_acc_t ..> Task : "processa"

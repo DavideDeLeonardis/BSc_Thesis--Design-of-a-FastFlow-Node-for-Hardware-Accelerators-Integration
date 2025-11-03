@@ -14,15 +14,14 @@
  * @brief Implementazione di IAccelerator che gestisce l'offloading su GPU.
  *
  * La pipeline interna al nodo ff_node_acc_t è composta da 2 thread:
- * - Il thread Producer esegue gli stadi di Upload e Execute, utilizzando le
- * funzioni qui dichiarate send_data_to_device() e execute_kernel().
- * - Il thread Consumer esegue lo stadio di Download, utilizzando la
- * funzione qui dichiarata get_results_from_device().
+ * - Il thread Producer esegue gli stadi di Upload e Execute, utilizzando le funzioni qui dichiarate
+ * send_data_to_device() e execute_kernel().
+ * - Il thread Consumer esegue lo stadio di Download, utilizzando la funzione qui dichiarata
+ * get_results_from_device().
  */
 class Gpu_OpenCL_Accelerator : public IAccelerator {
  public:
-   Gpu_OpenCL_Accelerator(const std::string &kernel_path,
-                  const std::string &kernel_name);
+   Gpu_OpenCL_Accelerator(const std::string &kernel_path, const std::string &kernel_name);
    ~Gpu_OpenCL_Accelerator() override;
 
    // Esegue tutte le operazioni di setup una volta sola (creare contesto,
@@ -36,8 +35,7 @@ class Gpu_OpenCL_Accelerator : public IAccelerator {
    // Metoodi utili per i thread della pipeline interna.
    void send_data_to_device(void *task_context) override;
    void execute_kernel(void *task_context) override;
-   void get_results_from_device(void *task_context,
-                                long long &computed_ns) override;
+   void get_results_from_device(void *task_context, long long &computed_ns) override;
 
  private:
    cl_context context_{nullptr};     // Il contesto OpenCL
@@ -45,8 +43,8 @@ class Gpu_OpenCL_Accelerator : public IAccelerator {
    cl_program program_{nullptr};     // Il programma OpenCL (kernel compilato)
    cl_kernel kernel_{nullptr};       // Il kernel OpenCL (func da eseguire)
 
-   // Incapsula la logica per l'acquisizione, il rilascio e la riallocazione dei
-   // buffer di memoria sul device.
+   // Incapsula la logica per l'acquisizione, il rilascio e la riallocazione dei buffer di memoria
+   // sul device.
    std::unique_ptr<BufferManager> buffer_manager_;
 
    std::string kernel_path_;

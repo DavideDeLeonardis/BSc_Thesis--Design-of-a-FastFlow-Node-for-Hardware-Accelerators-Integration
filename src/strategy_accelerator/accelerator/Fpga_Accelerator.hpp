@@ -19,11 +19,11 @@
  * - Il thread Consumer esegue lo stadio di Download, utilizzando la
  * funzione qui dichiarata get_results_from_device().
  */
-class FpgaAccelerator : public IAccelerator {
+class Fpga_Accelerator : public IAccelerator {
  public:
-   FpgaAccelerator(const std::string &kernel_path,
+   Fpga_Accelerator(const std::string &kernel_path,
                    const std::string &kernel_name);
-   ~FpgaAccelerator() override;
+   ~Fpga_Accelerator() override;
 
    // Esegue tutte le operazioni di setup una volta sola (creare contesto,
    // coda comandi, compilare kernel, inizializzare pool buffer).

@@ -1,6 +1,8 @@
 #import "Gpu_Metal_Accelerator.hpp"
-#include "../common/Task.hpp"
+
+#include "../../common/Task.hpp"
 #import <Metal/Metal.h>
+
 #include <chrono>
 #include <condition_variable>
 #include <filesystem>
@@ -102,7 +104,7 @@ class MetalBufferManager {
    id<MTLDevice> device_; // Riferimento al device Metal.
 
    // Dati per il pool di buffer nel device e per la gestione della concorrenza.
-   const size_t POOL_SIZE = 3;
+   const size_t POOL_SIZE = 3; // ! POOL_SIZE ottimale.
    std::vector<BufferSet> buffer_pool_;
    std::queue<size_t> free_buffer_indices_;
    std::mutex pool_mutex_;

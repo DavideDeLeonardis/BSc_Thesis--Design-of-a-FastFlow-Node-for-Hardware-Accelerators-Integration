@@ -40,26 +40,26 @@ endif()
 set(COMMON_SOURCES
     src/main.cpp
     src/ff_Pipe_nodes/ff_node_acc_t.cpp
-    src/factory/RunnerStrategy_Factory.cpp
-    src/strategy_cpu/CpuFfStrategy.cpp
-    src/strategy_accelerator/AcceleratorPipelineStrategy.cpp
-    src/accelerator/BufferManager.cpp
+    src/factory/DeviceRunner_Factory.cpp
+    src/strategy_cpu/Cpu_FF_Runner.cpp
+    src/strategy_accelerator/AcceleratorPipelineRunner.cpp
+    src/strategy_accelerator/accelerator/BufferManager.cpp
     src/helpers/Helpers.cpp
 )
 
 # Aggiunge i file sorgente e le librerie specifiche per ogni piattaforma.
 if(APPLE)
     list(APPEND COMMON_SOURCES 
-        src/accelerator/Gpu_OpenCL_Accelerator.cpp
-        src/accelerator/Gpu_Metal_Accelerator.mm
+        src/strategy_accelerator/accelerator/Gpu_OpenCL_Accelerator.cpp
+        src/strategy_accelerator/accelerator/Gpu_Metal_Accelerator.mm
     )
     find_library(METAL_LIBRARY Metal REQUIRED)
     find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
     set(PLATFORM_LIBS ${METAL_LIBRARY} ${FOUNDATION_LIBRARY})
 else()
     list(APPEND COMMON_SOURCES 
-        src/strategy_cpu/CpuOmpStrategy.cpp
-        src/accelerator/FpgaAccelerator.cpp
+        src/strategy_cpu/Cpu_OMP_Runner.cpp
+        src/strategy_accelerator/accelerator/Fpga_Accelerator.cpp
     )
     set(PLATFORM_LIBS stdc++fs)
 endif()
@@ -92,7 +92,7 @@ target_compile_options(tesi-exec PRIVATE -Wno-deprecated-declarations)
 
 # Diciamo a CMake di trattare il file .mm come Objective-C++ e di attivare ARC.
 if(APPLE)
-    set_source_files_properties(src/accelerator/Gpu_Metal_Accelerator.mm PROPERTIES
+    set_source_files_properties(src/strategy_accelerator/accelerator/Gpu_Metal_Accelerator.mm PROPERTIES
         LANGUAGE OBJCXX
         COMPILE_FLAGS "-fobjc-arc"
     )

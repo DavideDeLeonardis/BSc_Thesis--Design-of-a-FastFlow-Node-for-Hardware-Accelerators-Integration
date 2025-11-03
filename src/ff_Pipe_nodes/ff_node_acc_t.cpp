@@ -9,8 +9,7 @@
  * 2. Consumer (Download): Trasferisce i risultati dal device all'host.
  */
 
-// Sentinella usata per segnalare la fine dello stream di dati alla pipeline
-// interna.
+// Sentinella usata per segnalare la fine dello stream di dati alla pipeline interna.
 static char sentinel_obj;
 void *const ff_node_acc_t::SENTINEL = &sentinel_obj;
 

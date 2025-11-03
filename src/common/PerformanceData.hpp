@@ -2,7 +2,8 @@
 #include <cstddef>
 
 /**
- * @brief Struttura usata per contenere le metriche di performance calcolate.
+ * @brief Struttura usata per contenere le metriche di performance calcolate a partire dai dati
+ * raccolti in StatesCollector.
  */
 struct PerformanceData {
    double avg_service_time_ms = 0.0;

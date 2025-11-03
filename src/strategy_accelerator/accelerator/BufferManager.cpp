@@ -1,4 +1,5 @@
 #include "BufferManager.hpp"
+
 #include <iostream>
 
 /**
@@ -37,8 +38,8 @@ bool BufferManager::reallocate_buffers_if_needed(size_t required_size_bytes) {
    if (allocated_size_bytes_ == required_size_bytes)
       return true; // Nessuna riallocazione necessaria
 
-   std::cerr << "  [BufferManager - DEBUG] Allocating pool buffers for "
-             << required_size_bytes << " bytes\n";
+   std::cerr << "  [BufferManager - DEBUG] Allocating pool buffers for " << required_size_bytes
+             << " bytes\n";
 
    // Rilascia eventuali buffer esistenti.
    for (auto &buffer_set : buffer_pool_) {
@@ -53,15 +54,15 @@ bool BufferManager::reallocate_buffers_if_needed(size_t required_size_bytes) {
    // Alloca nuovi buffer.
    cl_int ret;
    for (size_t i = 0; i < POOL_SIZE; ++i) {
-      buffer_pool_[i].bufferA = clCreateBuffer(context_, CL_MEM_READ_ONLY,
-                                               required_size_bytes, NULL, &ret);
-      buffer_pool_[i].bufferB = clCreateBuffer(context_, CL_MEM_READ_ONLY,
-                                               required_size_bytes, NULL, &ret);
-      buffer_pool_[i].bufferC = clCreateBuffer(context_, CL_MEM_WRITE_ONLY,
-                                               required_size_bytes, NULL, &ret);
+      buffer_pool_[i].bufferA =
+         clCreateBuffer(context_, CL_MEM_READ_ONLY, required_size_bytes, NULL, &ret);
+      buffer_pool_[i].bufferB =
+         clCreateBuffer(context_, CL_MEM_READ_ONLY, required_size_bytes, NULL, &ret);
+      buffer_pool_[i].bufferC =
+         clCreateBuffer(context_, CL_MEM_WRITE_ONLY, required_size_bytes, NULL, &ret);
       if (ret != CL_SUCCESS) {
-         std::cerr
-            << "[ERROR] BufferManager: Failed to allocate buffer pool.\n";
+         std::cerr << "[ERROR] BufferManager: Failed to allocate buffer pool. If on FPGA, maxium N "
+                      "usable is 7449999.\n";
          return false;
       }
    }
@@ -78,8 +79,7 @@ size_t BufferManager::acquire_buffer_set() {
    std::unique_lock<std::mutex> lock(pool_mutex_);
 
    // Attende finché non c'è un buffer libero.
-   buffer_available_cond_.wait(
-      lock, [this] { return !free_buffer_indices_.empty(); });
+   buffer_available_cond_.wait(lock, [this] { return !free_buffer_indices_.empty(); });
 
    // Th risvegliato. Estrae e restituisce l'indice del buffer libero.
    size_t index = free_buffer_indices_.front();

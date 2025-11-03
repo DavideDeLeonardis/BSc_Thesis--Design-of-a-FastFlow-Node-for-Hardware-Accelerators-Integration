@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../common/Task.hpp"
+#include "../../common/Task.hpp"
 
 /**
  * @brief Interfaccia per un acceleratore hardware (es. GPU, FPGA).
  *
  * Definisce le funzioni per ottenere e rilasciare i buffer, e le 3 funzioni
  * principali che implementano i due thread della pipeline interna:
- * - Thread Producer (stadi 1 e 2): send_data_to_device() e
- * execute_kernel().
+ * - Thread Producer (stadi 1 e 2): send_data_to_device() e execute_kernel().
  * - Thread Consumer (stadio 3): get_results_from_device().
  *
  * !! Stiamo eseguendo i task in parallelo sull'acceleratore, ma stiamo serializzando la
