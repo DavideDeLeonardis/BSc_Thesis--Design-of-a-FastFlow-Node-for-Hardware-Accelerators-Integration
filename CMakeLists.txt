@@ -40,7 +40,9 @@ endif()
 set(COMMON_SOURCES
     src/main.cpp
     src/ff_Pipe_nodes/ff_node_acc_t.cpp
-    src/cpu_runner/Cpu_FF_Runner.cpp
+    src/factory/RunnerStrategyFactory.cpp
+    src/strategy_cpu/CpuFfStrategy.cpp
+    src/strategy_accelerator/AcceleratorPipelineStrategy.cpp
     src/accelerator/BufferManager.cpp
     src/helpers/Helpers.cpp
 )
@@ -56,7 +58,7 @@ if(APPLE)
     set(PLATFORM_LIBS ${METAL_LIBRARY} ${FOUNDATION_LIBRARY})
 else()
     list(APPEND COMMON_SOURCES 
-        src/cpu_runner/Cpu_OMP_Runner.cpp
+        src/strategy_cpu/CpuOmpStrategy.cpp
         src/accelerator/FpgaAccelerator.cpp
     )
     set(PLATFORM_LIBS stdc++fs)
