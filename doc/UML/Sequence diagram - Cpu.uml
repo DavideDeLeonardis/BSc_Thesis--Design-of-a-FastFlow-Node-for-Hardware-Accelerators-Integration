@@ -1,0 +1,70 @@
+@startuml
+'--- Stile ---
+skinparam participantFontSize 10
+skinparam sequenceMessageAlign center
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #333
+    ActorBorderColor #333
+    ParticipantBorderColor #333
+}
+'----------------
+
+'== Partecipanti ==========================================
+participant "main" as Main
+' L'oggetto concreto (istanza)
+participant "Cpu_OMP_Strategy\n(Cpu_OMP_Runner)" as Strategy
+' La classe base, che definisce l'implementazione di execute()
+participant "AbstractCpuStrategy\n(Logica Base: AbstractCpuRunner)" as Base
+
+'== Esecuzione =======================================
+' 1. Il main chiama execute() sull'oggetto strategy
+Main -> Strategy : execute(N, NUM_TASKS)
+activate Strategy
+
+    ' 2. L'oggetto strategy non sovrascrive execute(),
+    '    quindi viene eseguita l'implementazione ereditata
+    '    dalla classe Base (sullo stesso oggetto).
+    Strategy -> Base : [Esegue execute() di AbstractCpuStrategy]
+    activate Base
+    
+    note over Base
+      1. Valida kernel
+      2. Inizializza vettori a_, b_, c_
+      3. Avvia timer
+    end note
+    
+    ' 3. La Classe Base esegue il loop sui task
+    loop NUM_TASKS volte
+        ' 4. La Base chiama il metodo "Hook" (virtuale).
+        '    Il Dynamic Dispatch la re-indirizza
+        '    all'implementazione sull'oggetto concreto (Strategy).
+        Base -> Strategy : execute_parallel_loop(0, N)
+        activate Strategy
+        
+            ' 5. La Strategia Concreta esegue la sua
+            '    implementazione (es. #pragma omp)
+            loop N volte (in parallelo)
+                ' 6. La Strategia Concreta richiama l'helper
+                '    non-virtuale sulla Classe Base.
+                Strategy -> Base : execute_kernel_work(i)
+            end
+            
+        Strategy --> Base
+        deactivate Strategy
+    end
+    
+    note over Base
+      7. Ferma timer
+      8. Popola ComputeResult
+    end note
+    
+    ' 9. La Base ritorna i risultati
+    Base --> Strategy : return results
+    deactivate Base
+    
+' 10. L'oggetto strategy ritorna i risultati al main
+Strategy --> Main : return results
+deactivate Strategy
+@enduml

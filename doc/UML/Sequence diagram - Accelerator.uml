@@ -1,0 +1,123 @@
+@startuml
+'--- Stile ---
+skinparam participantFontSize 10
+skinparam sequenceMessageAlign center
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequence {
+    ArrowColor #333
+    ActorBorderColor #333
+    ParticipantBorderColor #333
+}
+'----------------
+
+'== Partecipanti ==========================================
+participant "main" as Main
+participant "AcceleratorPipelineStrategy" as Strategy
+participant "Emitter\n(Node 1)" as Emit
+participant "ff_node_acc_t\n(Node 2)" as Node
+' Le code sono partecipanti (canali di comunicazione)
+participant "inQ_" as inQ
+participant "producerThread\n(in Node 2)" as Prod
+participant "outQ_" as outQ
+participant "consumerThread\n(in Node 2)" as Cons
+participant "IAccelerator\n(GPU/FPGA)" as Acc
+participant "StatsCollector" as Stats
+
+'== 1. Start-up ===========================================
+Main -> Strategy : execute(N, NUM_TASKS)
+activate Strategy
+
+note over Strategy
+  Crea la pipeline, i nodi e
+  lo StatsCollector.
+end note
+Strategy -> Stats : new()
+Strategy -> Emit : new(N, NUM_TASKS)
+Strategy -> Node : new(accelerator.get(), &stats)
+
+Strategy -> Emit : pipe.run_and_wait_end()
+Strategy -> Node : pipe.run_and_wait_end()
+
+group Inizializzazione (chiamata da FF con svc_init())
+    Node -> Acc : initialize()
+    activate Acc
+    Acc --> Node : return true
+    deactivate Acc
+    
+    Node -> Prod : <<create>>
+    activate Prod
+    Node -> Cons : <<create>>
+    activate Cons
+end
+
+'== 2. Streaming (Logica di svc() ) =======================
+loop NUM_TASKS volte
+    Emit -> Node : svc(Task*)
+    activate Node
+    
+    ' === Ecco la logica di svc() ===
+    ' Il "Node" (thread principale FF) esegue il codice svc:
+    ' 1. Imposta l'arrival_time (non mostrato)
+    ' 2. Esegue il push sulla coda interna
+    Node -> inQ : push(task)
+    ' --- Fine logica svc() ---
+    
+    Node --> Emit : return GO_ON
+    deactivate Node
+end
+
+'== 3. Producer loop (Stadi 1 & 2) =======================
+loop while !eos
+    ' Il producer è bloccato in attesa sulla coda inQ_
+    Prod -> inQ : pop(task)
+    
+    Prod -> Acc : send_data_to_device(task)
+    Prod -> Acc : execute_kernel(task)
+    Prod -> outQ : push(task)
+end
+
+'== 4. Consumer loop (Stadio 3) ===========================
+loop while !eos
+    ' Il consumer è bloccato in attesa sulla coda outQ_
+    Cons -> outQ : pop(task)
+    
+    note right of Cons : Attesa bloccante del completamento\ndel kernel e del download.
+    Cons -> Acc : get_results_from_device(task, &ns)
+    
+    Cons -> Stats : add(metrics)
+end
+
+'== 5. Shutdown ===========================================
+' Emitter (Nodo 1) invia EOS
+Emit -> Node : svc(EOS)
+activate Node
+' svc() inoltra l'EOS (SENTINEL) alla coda inQ_
+Node -> inQ : push(EOS)
+Node --> Emit : return FF_EOS
+deactivate Node
+
+' Producer riceve EOS, esce...
+Prod -> inQ : pop(EOS)
+deactivate Prod 
+' ...e inoltra EOS
+Prod -> outQ : push(EOS)
+
+' Consumer riceve EOS, esce.
+Cons -> outQ : pop(EOS)
+deactivate Cons 
+
+' Il runtime FF chiama svc_end()
+group Shutdown (chiamata da FF con svc_end())
+    Node -> Prod : join()
+    Node -> Cons : join()
+    ...
+    Node --> Strategy : return (pipe si sblocca)
+deactivate Node
+end
+
+' La Strategy raccoglie i risultati dallo StatsCollector
+Strategy -> Stats : get(metrics)
+Strategy --> Main : return results
+deactivate Strategy
+@enduml
