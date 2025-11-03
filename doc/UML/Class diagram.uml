@@ -28,7 +28,7 @@ package "Client" {
     + main()
   }
 
-  class RunnerStrategyFactory <<factory>> {
+  class RunnerStrategy_Factory <<factory>> {
     + {static} create_runner_strategy(type, ...) : IRunnerStrategy*
   }
 }
@@ -117,9 +117,9 @@ package "Logica Hardware (IAccelerator)" {
 
 
 ' === Relazioni Principali (collegano i package) ===
-main ..> RunnerStrategyFactory : "usa"
+main ..> RunnerStrategy_Factory : "usa"
 main ..> IRunnerStrategy : "usa"
-RunnerStrategyFactory ..> IRunnerStrategy : "crea"
+RunnerStrategy_Factory ..> IRunnerStrategy : "crea"
 
 ' Le strategie implementano l'interfaccia
 IRunnerStrategy <|-- AbstractCpuStrategy
