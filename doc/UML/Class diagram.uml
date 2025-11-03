@@ -1,58 +1,154 @@
-@startuml ClassDiagram_FastFlowAccel
-'--- STYLE -------------------------------------------------------------
+@startuml
+'--- Stile ---
 skinparam classAttributeIconSize 0
 skinparam classFontSize 10
 skinparam classAttributeFontSize 9
 skinparam classOperationFontSize 9
-'----------------------------------------------------------------------
-
-'== Classi principali =================================================
-abstract class DeviceAdapter {
-  + context : cl::Context
-  + queue   : cl::CommandQueue
-  + kernel  : cl::Kernel
-  --
-  + init()
-  + prepareBuffers(task)
-  + launchKernel(task)
-  + cleanup()
+skinparam linetype ortho
+'--- Colori per i ruoli ---
+skinparam interface {
+  BackgroundColor LightBlue
+  BorderColor Blue
+}
+skinparam class {
+  BackgroundColor PaleGreen
+}
+skinparam abstract {
+  BackgroundColor LightYellow
+}
+' Colore per DTOs / Structs
+skinparam stereotype {
+  BackgroundColor Wheat
+  BorderColor Orange
 }
 
-class GpuAdapter {
-  + buildFromSource(src)
+' === 1. Il Client (main) e la Factory ===
+package "Client" {
+  class main {
+    + main()
+  }
+
+  class RunnerStrategyFactory <<factory>> {
+    + {static} create_runner_strategy(type, ...) : IRunnerStrategy*
+  }
 }
 
-class FpgaAdapter {
-  + loadXclbin(file)
+' === 2. L'Interfaccia Comune e le Struct Dati ===
+package "Interfaccia Comune" {
+  interface IRunnerStrategy {
+    + {abstract} execute(N, NUM_TASKS) : ComputeResult
+  }
+
+  class ComputeResult <<struct>> {
+    + elapsed_ns : long long
+    + computed_ns : long long
+    + tasks_completed : size_t
+  }
+
+  class Task <<struct>> {
+    + a, b, *c : int*
+    + n : size_t
+    + id : size_t
+    + buffer_idx : size_t
+  }
+  
+  IRunnerStrategy ..> ComputeResult : "restituisce"
 }
 
-class "ff::SPSCQueue<T>" as SPSCQueue <<template>>
-
-class ff_node_acc_t {
-  - adapter_  : DeviceAdapter*
-  - inQ_      : SPSCQueue*
-  - outQ_     : SPSCQueue*
-  - done_     : std::atomic<bool>
-  - prodTh_   : std::thread
-  - consTh_   : std::thread
-  --
-  + svc_init()
-  + svc(void*)
-  + svc_end()
+' === 3. Famiglia 1: Strategie CPU ===
+' (Rimosso il package esterno "Implementazioni delle Strategie")
+package "Strategie CPU" {
+  abstract class AbstractCpuStrategy {
+    # {abstract} execute_parallel_loop(start, end)
+    # execute_kernel_work(i)
+    ---
+    + execute(N, NUM_TASKS) : ComputeResult
+  }
+  class CpuOmpStrategy {
+    # execute_parallel_loop(start, end)
+  }
+  class CpuFfStrategy {
+    # execute_parallel_loop(start, end)
+  }
 }
 
-class Task
-class Result
+' === 4. Famiglia 2: Strategie Acceleratore (Adattatore) ===
+package "Strategie Acceleratore" {
+  class AcceleratorPipelineStrategy {
+    - accelerator : IAccelerator*
+    ---
+    + execute(N, NUM_TASKS) : ComputeResult
+  }
+  
+  class ff_node_acc_t {
+    - accelerator_ : IAccelerator*
+    - stats_ : StatsCollector*
+    ---
+    + svc_init()
+    + svc(Task*)
+    + svc_end()
+  }
 
-'== Relazioni =========================================================
-DeviceAdapter <|-- GpuAdapter
-DeviceAdapter <|-- FpgaAdapter
+  class StatsCollector <<struct>> {
+    + tasks_processed : atomic
+    + count_promise : promise
+    + computed_ns : atomic
+    + total_InNode_time_ns : atomic
+  }
+}
 
-ff_node_acc_t *-- DeviceAdapter
-ff_node_acc_t *-- SPSCQueue : inQ_
-ff_node_acc_t *-- SPSCQueue : outQ_
+' === 5. Famiglia 3: Logica Hardware (Il tuo codice) ===
+package "Logica Hardware (IAccelerator)" {
+  interface IAccelerator {
+    + {abstract} initialize()
+    + {abstract} send_data_to_device(Task*)
+    + {abstract} execute_kernel(Task*)
+    + {abstract} get_results_from_device(Task*, &ns)
+  }
+  
+  class Gpu_OpenCL_Accelerator
+  class FpgaAccelerator
+  class Gpu_Metal_Accelerator
+  
+  IAccelerator <|-- Gpu_OpenCL_Accelerator
+  IAccelerator <|-- FpgaAccelerator
+  IAccelerator <|-- Gpu_Metal_Accelerator
+}
 
-Task --> DeviceAdapter : uses
-Result --> ff_node_acc_t : producedBy
 
+' === Relazioni Principali (collegano i package) ===
+main ..> RunnerStrategyFactory : "usa"
+main ..> IRunnerStrategy : "usa"
+RunnerStrategyFactory ..> IRunnerStrategy : "crea"
+
+' Le strategie implementano l'interfaccia
+IRunnerStrategy <|-- AbstractCpuStrategy
+IRunnerStrategy <|-- AcceleratorPipelineStrategy
+
+' Dettagli implementazione CPU
+AbstractCpuStrategy <|-- CpuOmpStrategy
+AbstractCpuStrategy <|-- CpuFfStrategy
+
+' Dettagli implementazione Acceleratore
+AcceleratorPipelineStrategy o-- "1" IAccelerator : "adatta (has-a)"
+AcceleratorPipelineStrategy ..> ff_node_acc_t : "crea e usa"
+AcceleratorPipelineStrategy ..> StatsCollector : "crea"
+ff_node_acc_t ..> IAccelerator : "usa"
+ff_node_acc_t ..> StatsCollector : "usa (aggiorna)"
+ff_node_acc_t ..> Task : "processa"
+IAccelerator ..> Task : "opera su"
+
+' === FORZATURA LAYOUT ===
+' Riga 1 (Top): Client e Interfaccia (affiancati)
+"Client" -[hidden]right- "Interfaccia Comune"
+
+' Riga 2 (Mid): Le due strategie (affiancate)
+"Strategie CPU" -[hidden]right- "Strategie Acceleratore"
+
+' Riga 3 (Bottom): La logica hardware (posizionata sotto le strategie)
+"Strategie CPU" -[hidden]down- "Logica Hardware (IAccelerator)"
+
+' Link verticali tra le righe
+"Interfaccia Comune" -[hidden]down- "Strategie Acceleratore"
+"Client" -[hidden]down- "Strategie CPU"
 @enduml
