@@ -28,7 +28,7 @@ OpenMP: Spiegare il modello a direttive (#pragma omp parallel for) come standard
 OpenCL: Spiegare il suo ruolo di standard multipiattaforma (Contesto, Coda, Kernel .cl, Eventi).
 Apple Metal: Spiegare il suo ruolo di API nativa ad alte prestazioni per macOS (Device, Coda, Kernel .metal, Memoria Unificata).
 
-Capitolo 3: Progettazione dell'Architettura Software
+Capitolo 3: Progettazione dell'Architettura Software - Progetto logico
 (Il "come" e il "perché" del suo design)
 3.1 Visione d'Insieme: Un Dispatcher Flessibile
 Descrivere l'architettura del main come "dispatcher" che seleziona il percorso di esecuzione (CPU vs. Acceleratore) in base agli input.
