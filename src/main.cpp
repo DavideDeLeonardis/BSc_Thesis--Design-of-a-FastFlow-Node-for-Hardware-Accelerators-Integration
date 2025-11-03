@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
          create_runner_for_device(device_type, kernel_path, kernel_name);
 
       if (!strategy) {
-         std::cerr << "[ERROR] Invalid device type '" << device_type << "' for this OS.\n\n";
+         std::cerr << "[ERROR] Invalid device type '" << device_type << "' for this OS.\n";
          print_usage(argv[0]);
          return -1;
       }

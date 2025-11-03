@@ -97,7 +97,7 @@ void print_configuration(size_t N, size_t NUM_TASKS, const std::string &device_t
  * Helper per stampare le istruzioni d'uso.
  */
 void print_usage(const char *prog_name) {
-   std::cerr << "Usage: " << prog_name << " [N] [NUM_TASKS] [DEVICE] [KERNEL]\n"
+   std::cerr << "\nUsage: " << prog_name << " [N] [NUM_TASKS] [DEVICE] [KERNEL]\n"
              << "  N            : Size of the vectors (default: 1,000,000)\n"
              << "  NUM_TASKS    : Number of tasks to run (default: 20)\n"
              << "  DEVICE       : 'cpu_ff', 'cpu_omp', 'gpu_opencl', 'gpu_metal' or 'fpga' "
