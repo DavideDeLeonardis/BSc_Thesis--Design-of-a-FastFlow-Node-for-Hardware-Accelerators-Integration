@@ -116,6 +116,7 @@ class MetalBufferManager {
 };
 
 // =======================================================================
+// =======================================================================
 // Gpu_Metal_Accelerator
 // =======================================================================
 
@@ -144,6 +145,9 @@ Gpu_Metal_Accelerator::~Gpu_Metal_Accelerator() {
    std::cerr << "[Gpu_Metal_Accelerator] Destroyed and Metal resources released.\n";
 }
 
+/**
+ * @brief Esegue tutte le operazioni di setup.
+ */
 bool Gpu_Metal_Accelerator::initialize() {
    // Trova un device che supporta Metal.
    device_ = (__bridge_retained void *)MTLCreateSystemDefaultDevice();
@@ -214,14 +218,9 @@ bool Gpu_Metal_Accelerator::initialize() {
    return true;
 }
 
-size_t Gpu_Metal_Accelerator::acquire_buffer_set() {
-   return buffer_manager_->acquire_buffer_set();
-}
-
-void Gpu_Metal_Accelerator::release_buffer_set(size_t index) {
-   buffer_manager_->release_buffer_set(index);
-}
-
+/**
+ * @brief Stadio 1 (Upload).
+ */
 void Gpu_Metal_Accelerator::send_data_to_device(void *task_context) {
    auto *task = static_cast<Task *>(task_context);
    std::cerr << "[Gpu_Metal_Accelerator - START] Processing task " << task->id
@@ -238,6 +237,9 @@ void Gpu_Metal_Accelerator::send_data_to_device(void *task_context) {
    memcpy([current_buffers.bufferB contents], task -> b, required_size_bytes);
 }
 
+/**
+ * @brief Stadio 2 (Execute).
+ */
 void Gpu_Metal_Accelerator::execute_kernel(void *task_context) {
    auto *task = static_cast<Task *>(task_context);
    auto &current_buffers = buffer_manager_->get_buffer_set(task->buffer_idx);
@@ -280,6 +282,9 @@ void Gpu_Metal_Accelerator::execute_kernel(void *task_context) {
    task->sync_handle = (__bridge_retained void *)command_buffer;
 }
 
+/**
+ * @brief Stadio 3 (Download).
+ */
 void Gpu_Metal_Accelerator::get_results_from_device(void *task_context,
                                                     long long &computed_ns) {
    auto *task = static_cast<Task *>(task_context);
@@ -303,4 +308,15 @@ void Gpu_Metal_Accelerator::get_results_from_device(void *task_context,
    memcpy(task->c, [current_buffers.bufferC contents], required_size_bytes);
 
    std::cerr << "[Gpu_Metal_Accelerator - END] Task " << task->id << " finished.\n";
+}
+
+// ------------------------------------------------------------------------
+// Metodi per l'acquisizione e il rilascio dei buffer
+// ------------------------------------------------------------------------
+size_t Gpu_Metal_Accelerator::acquire_buffer_set() {
+   return buffer_manager_->acquire_buffer_set();
+}
+
+void Gpu_Metal_Accelerator::release_buffer_set(size_t index) {
+   buffer_manager_->release_buffer_set(index);
 }

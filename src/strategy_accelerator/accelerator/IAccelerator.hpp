@@ -9,10 +9,6 @@
  * principali che implementano i due thread della pipeline interna:
  * - Thread Producer (stadi 1 e 2): send_data_to_device() e execute_kernel().
  * - Thread Consumer (stadio 3): get_results_from_device().
- *
- * !! Stiamo eseguendo i task in parallelo sull'acceleratore, ma stiamo serializzando la
- * !! finalizzazione e il download, e ciò ci permette di riutilizzare lo stesso buffer di
- * !! output.
  */
 class IAccelerator {
  public:
@@ -21,18 +17,6 @@ class IAccelerator {
    // Esegue tutte le operazioni di setup una tantum.
    // (es. trovare il device, creare il contesto OpenCL, compilare il kernel).
    virtual bool initialize() = 0;
-
-   /**
-    * @brief Acquisisce un set di buffer libero dal pool del device.
-    * @return L'indice del set di buffer acquisito.
-    */
-   virtual size_t acquire_buffer_set() = 0;
-
-   /**
-    * @brief Rilascia un set di buffer nel pool del device.
-    * @param index L'indice del set da rilasciare.
-    */
-   virtual void release_buffer_set(size_t index) = 0;
 
    /**
     * @brief Stadio 1 - Upload: Invia i dati di input dall'host al device.
@@ -59,4 +43,16 @@ class IAccelerator {
     * @param computed_ns Tempo di calcolo effettivo.
     */
    virtual void get_results_from_device(void *task_context, long long &computed_ns) = 0;
+
+   /**
+    * @brief Acquisisce un set di buffer libero dal pool del device.
+    * @return L'indice del set di buffer acquisito.
+    */
+   virtual size_t acquire_buffer_set() = 0;
+
+   /**
+    * @brief Rilascia un set di buffer nel pool del device.
+    * @param index L'indice del set da rilasciare.
+    */
+   virtual void release_buffer_set(size_t index) = 0;
 };

@@ -19,14 +19,14 @@ class Gpu_Metal_Accelerator : public IAccelerator {
    // creare coda comandi, compilare kernel .metal).
    bool initialize() override;
 
-   // Metodi per l'acquisizione e il rilascio dei buffer.
-   size_t acquire_buffer_set() override;
-   void release_buffer_set(size_t index) override;
-
    // Metoodi utili per i thread della pipeline interna.
    void send_data_to_device(void *task_context) override;
    void execute_kernel(void *task_context) override;
    void get_results_from_device(void *task_context, long long &computed_ns) override;
+
+   // Metodi per l'acquisizione e il rilascio dei buffer.
+   size_t acquire_buffer_set() override;
+   void release_buffer_set(size_t index) override;
 
  private:
    // --- Oggetti Metal ---

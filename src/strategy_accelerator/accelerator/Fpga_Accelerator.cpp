@@ -127,12 +127,6 @@ bool Fpga_Accelerator::initialize() {
    return true;
 }
 
-size_t Fpga_Accelerator::acquire_buffer_set() { return buffer_manager_->acquire_buffer_set(); }
-
-void Fpga_Accelerator::release_buffer_set(size_t index) {
-   buffer_manager_->release_buffer_set(index);
-}
-
 /**
  * @brief Stadio 1 (Upload).
  * Fa l'upload dei dati di input A e B dall'host alla device memory.
@@ -224,4 +218,13 @@ void Fpga_Accelerator::get_results_from_device(void *task_context, long long &co
    computed_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
 
    std::cerr << "[Fpga_Accelerator - END] Task " << task->id << " finished.\n";
+}
+
+// ------------------------------------------------------------------------
+// Metodi per l'acquisizione e il rilascio dei buffer
+// ------------------------------------------------------------------------
+size_t Fpga_Accelerator::acquire_buffer_set() { return buffer_manager_->acquire_buffer_set(); }
+
+void Fpga_Accelerator::release_buffer_set(size_t index) {
+   buffer_manager_->release_buffer_set(index);
 }

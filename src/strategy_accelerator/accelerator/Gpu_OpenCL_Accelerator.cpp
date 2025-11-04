@@ -128,14 +128,6 @@ bool Gpu_OpenCL_Accelerator::initialize() {
    return true;
 }
 
-size_t Gpu_OpenCL_Accelerator::acquire_buffer_set() {
-   return buffer_manager_->acquire_buffer_set();
-}
-
-void Gpu_OpenCL_Accelerator::release_buffer_set(size_t index) {
-   buffer_manager_->release_buffer_set(index);
-}
-
 /**
  * @brief Stadio 1 (Upload).
  * Fa l'upload dei dati di input A e B dall'host alla device memory. L' evento per la
@@ -231,4 +223,15 @@ void Gpu_OpenCL_Accelerator::get_results_from_device(void *task_context,
    computed_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
 
    std::cerr << "[Gpu_OpenCL_Accelerator - END] Task " << task->id << " finished.\n";
+}
+
+// ------------------------------------------------------------------------
+// Metodi per l'acquisizione e il rilascio dei buffer
+// ------------------------------------------------------------------------
+size_t Gpu_OpenCL_Accelerator::acquire_buffer_set() {
+   return buffer_manager_->acquire_buffer_set();
+}
+
+void Gpu_OpenCL_Accelerator::release_buffer_set(size_t index) {
+   buffer_manager_->release_buffer_set(index);
 }
