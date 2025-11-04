@@ -12,21 +12,22 @@
  */
 
 // Macro per il controllo degli errori OpenCL.
-#define OCL_CHECK(err_code, call, on_error_action)                                                 \
-   do {                                                                                            \
-      err_code = (call);                                                                           \
-      if (err_code != CL_SUCCESS) {                                                                \
-         std::cerr << "[ERROR] OpenCL call `" #call "` failed with code " << err_code << " at "    \
-                   << __FILE__ << ":" << __LINE__ << std::endl;                                    \
-         on_error_action;                                                                          \
-      }                                                                                            \
+#define OCL_CHECK(err_code, call, on_error_action)                                            \
+   do {                                                                                       \
+      err_code = (call);                                                                      \
+      if (err_code != CL_SUCCESS) {                                                           \
+         std::cerr << "[ERROR] OpenCL call `" #call "` failed with code " << err_code         \
+                   << " at " << __FILE__ << ":" << __LINE__ << std::endl;                     \
+         on_error_action;                                                                     \
+      }                                                                                       \
    } while (0)
 
 /**
  * @brief Il costruttrore prende in input il nome della funzione kernel e il suo
  * path.
  */
-Fpga_Accelerator::Fpga_Accelerator(const std::string &kernel_path, const std::string &kernel_name)
+Fpga_Accelerator::Fpga_Accelerator(const std::string &kernel_path,
+                                   const std::string &kernel_name)
     : kernel_path_(kernel_path), kernel_name_(kernel_name) {}
 
 /**
@@ -60,10 +61,11 @@ bool Fpga_Accelerator::initialize() {
 
    // Trova una piattaforma OpenCL e un dispositivo di tipo ACCELERATOR.
    OCL_CHECK(ret, clGetPlatformIDs(1, &platform_id, NULL), return false);
-   OCL_CHECK(ret, clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR, 1, &device_id, NULL), {
-      std::cerr << "[FATAL] FPGA not found.\n";
-      exit(EXIT_FAILURE);
-   });
+   OCL_CHECK(ret, clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR, 1, &device_id, NULL),
+             {
+                std::cerr << "[FATAL] FPGA not found.\n";
+                exit(EXIT_FAILURE);
+             });
 
    // Crea un contesto
    context_ = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
@@ -89,7 +91,8 @@ bool Fpga_Accelerator::initialize() {
    // estensione .xclbin, poi lo leggo.
    if (!binaryFile.is_open() || !std::filesystem::is_regular_file(kernel_path_) ||
        kernel_path_.rfind(".xclbin") == std::string::npos) {
-      std::cerr << "[ERROR] Fpga_Accelerator: Could not open kernel file: " << kernel_path_ << "\n";
+      std::cerr << "[ERROR] Fpga_Accelerator: Could not open kernel file: " << kernel_path_
+                << "\n";
       exit(EXIT_FAILURE);
    }
    binaryFile.seekg(0, binaryFile.end);
@@ -141,8 +144,8 @@ void Fpga_Accelerator::send_data_to_device(void *task_context) {
    cl_int ret; // Codice di ritorno delle chiamate OpenCL
    auto *task = static_cast<Task *>(task_context);
 
-   std::cerr << "[Fpga_Accelerator - START] Processing task " << task->id << " with N=" << task->n
-             << "...\n";
+   std::cerr << "[Fpga_Accelerator - START] Processing task " << task->id
+             << " with N=" << task->n << "...\n";
 
    // Se la dimensione richiesta è diversa da quella allocata, rialloca
    // tutti i buffer del pool e ottieni il set di buffer.
@@ -152,12 +155,12 @@ void Fpga_Accelerator::send_data_to_device(void *task_context) {
 
    // Scrive i due input sulla device memory.
    OCL_CHECK(ret,
-             clEnqueueWriteBuffer(queue_, current_buffers.bufferA, CL_FALSE, 0, required_size_bytes,
-                                  task->a, 0, NULL, NULL),
+             clEnqueueWriteBuffer(queue_, current_buffers.bufferA, CL_FALSE, 0,
+                                  required_size_bytes, task->a, 0, NULL, NULL),
              return);
    OCL_CHECK(ret,
-             clEnqueueWriteBuffer(queue_, current_buffers.bufferB, CL_FALSE, 0, required_size_bytes,
-                                  task->b, 0, NULL, &task->event),
+             clEnqueueWriteBuffer(queue_, current_buffers.bufferB, CL_FALSE, 0,
+                                  required_size_bytes, task->b, 0, NULL, &task->event),
              return);
 }
 
@@ -174,9 +177,12 @@ void Fpga_Accelerator::execute_kernel(void *task_context) {
    cl_event previous_event = task->event;
 
    // Imposta gli argomenti del kernel.
-   OCL_CHECK(ret, clSetKernelArg(kernel_, 0, sizeof(cl_mem), &current_buffers.bufferA), return);
-   OCL_CHECK(ret, clSetKernelArg(kernel_, 1, sizeof(cl_mem), &current_buffers.bufferB), return);
-   OCL_CHECK(ret, clSetKernelArg(kernel_, 2, sizeof(cl_mem), &current_buffers.bufferC), return);
+   OCL_CHECK(ret, clSetKernelArg(kernel_, 0, sizeof(cl_mem), &current_buffers.bufferA),
+             return);
+   OCL_CHECK(ret, clSetKernelArg(kernel_, 1, sizeof(cl_mem), &current_buffers.bufferB),
+             return);
+   OCL_CHECK(ret, clSetKernelArg(kernel_, 2, sizeof(cl_mem), &current_buffers.bufferC),
+             return);
    OCL_CHECK(ret, clSetKernelArg(kernel_, 3, sizeof(int), &(task->n)), return);
 
    // Accoda l'esecuzione del kernel.
@@ -204,8 +210,8 @@ void Fpga_Accelerator::get_results_from_device(void *task_context, long long &co
 
    // Recupera i risultati dalla device memory alla memoria host.
    OCL_CHECK(ret,
-             clEnqueueReadBuffer(queue_, current_buffers.bufferC, CL_TRUE, 0, required_size_bytes,
-                                 task->c, 1, &previous_event, NULL),
+             clEnqueueReadBuffer(queue_, current_buffers.bufferC, CL_TRUE, 0,
+                                 required_size_bytes, task->c, 1, &previous_event, NULL),
              return);
 
    // Rilascia l'evento precedente.

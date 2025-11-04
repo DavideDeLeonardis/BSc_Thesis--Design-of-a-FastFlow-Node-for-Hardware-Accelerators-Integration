@@ -61,8 +61,9 @@ bool BufferManager::reallocate_buffers_if_needed(size_t required_size_bytes) {
       buffer_pool_[i].bufferC =
          clCreateBuffer(context_, CL_MEM_WRITE_ONLY, required_size_bytes, NULL, &ret);
       if (ret != CL_SUCCESS) {
-         std::cerr << "[ERROR] BufferManager: Failed to allocate buffer pool. If on FPGA, maxium N "
-                      "usable is 7449999.\n";
+         std::cerr
+            << "[ERROR] BufferManager: Failed to allocate buffer pool. If on FPGA, maxium N "
+               "usable is 7449999.\n";
          return false;
       }
    }

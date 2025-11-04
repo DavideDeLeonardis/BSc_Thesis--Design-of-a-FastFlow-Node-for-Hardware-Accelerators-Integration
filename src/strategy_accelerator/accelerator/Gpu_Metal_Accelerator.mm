@@ -50,8 +50,8 @@ class MetalBufferManager {
          return true;
 
       allocated_size_bytes_ = required_size_bytes;
-      // Su Apple Silicon la memoria è condivisa tra CPU e GPU, quindi possiamo accedere agli stessi
-      // dati senza copie esplicite sul bus PCIe.
+      // Su Apple Silicon la memoria è condivisa tra CPU e GPU, quindi possiamo accedere agli
+      // stessi dati senza copie esplicite sul bus PCIe.
       MTLResourceOptions options = MTLResourceStorageModeShared;
 
       for (size_t i = 0; i < POOL_SIZE; ++i) {
@@ -61,7 +61,8 @@ class MetalBufferManager {
                                                         options:options];
          buffer_pool_[i].bufferC = [device_ newBufferWithLength:required_size_bytes
                                                         options:options];
-         if (!buffer_pool_[i].bufferA || !buffer_pool_[i].bufferB || !buffer_pool_[i].bufferC) {
+         if (!buffer_pool_[i].bufferA || !buffer_pool_[i].bufferB ||
+             !buffer_pool_[i].bufferC) {
             std::cerr << "[ERROR] MetalBufferManager: Failed to allocate "
                          "buffer pool.\n";
             return false;
@@ -123,8 +124,8 @@ Gpu_Metal_Accelerator::Gpu_Metal_Accelerator(const std::string &kernel_path,
     : kernel_path_(kernel_path), kernel_name_(kernel_name) {}
 
 /**
- * Il distruttore usa __bridge_transfer per passare la proprietà dei puntatori C di nuovo ad ARC,
- * che li rilascerà correttamente.
+ * Il distruttore usa __bridge_transfer per passare la proprietà dei puntatori C di nuovo ad
+ * ARC, che li rilascerà correttamente.
  */
 Gpu_Metal_Accelerator::~Gpu_Metal_Accelerator() {
    if (pipeline_state_)
@@ -165,7 +166,8 @@ bool Gpu_Metal_Accelerator::initialize() {
    // Legge il kernel Metal e verifica che il percorso sia un file valido.
    std::ifstream kernelFile(kernel_path_);
    if (!kernelFile.is_open() || !std::filesystem::is_regular_file(kernel_path_)) {
-      std::cerr << "[ERROR] MetalAccelerator: Could not open kernel file: " << kernel_path_ << "\n";
+      std::cerr << "[ERROR] MetalAccelerator: Could not open kernel file: " << kernel_path_
+                << "\n";
       exit(EXIT_FAILURE);
    }
    std::string kernelSource((std::istreambuf_iterator<char>(kernelFile)),
@@ -196,7 +198,8 @@ bool Gpu_Metal_Accelerator::initialize() {
    kernel_function_ = (__bridge_retained void *)func;
 
    // Crea lo stato della pipeline di calcolo (oggetto che rappresenta il kernel compilato).
-   id<MTLComputePipelineState> pso = [dev newComputePipelineStateWithFunction:func error:&error];
+   id<MTLComputePipelineState> pso = [dev newComputePipelineStateWithFunction:func
+                                                                        error:&error];
    if (!pso) {
       std::cerr << "[ERROR] MetalAccelerator: Failed to create pipeline state "
                    "object.\n";
@@ -211,7 +214,9 @@ bool Gpu_Metal_Accelerator::initialize() {
    return true;
 }
 
-size_t Gpu_Metal_Accelerator::acquire_buffer_set() { return buffer_manager_->acquire_buffer_set(); }
+size_t Gpu_Metal_Accelerator::acquire_buffer_set() {
+   return buffer_manager_->acquire_buffer_set();
+}
 
 void Gpu_Metal_Accelerator::release_buffer_set(size_t index) {
    buffer_manager_->release_buffer_set(index);
@@ -222,8 +227,8 @@ void Gpu_Metal_Accelerator::send_data_to_device(void *task_context) {
    std::cerr << "[Gpu_Metal_Accelerator - START] Processing task " << task->id
              << " with N=" << task->n << "...\n";
 
-   // Se la dimensione richiesta è diversa da quella allocata, rialloca tutti i buffer del pool e
-   // ottieni il set di buffer.
+   // Se la dimensione richiesta è diversa da quella allocata, rialloca tutti i buffer del pool
+   // e ottieni il set di buffer.
    size_t required_size_bytes = sizeof(int) * task->n;
    buffer_manager_->reallocate_buffers_if_needed(required_size_bytes);
    auto &current_buffers = buffer_manager_->get_buffer_set(task->buffer_idx);
@@ -275,16 +280,18 @@ void Gpu_Metal_Accelerator::execute_kernel(void *task_context) {
    task->sync_handle = (__bridge_retained void *)command_buffer;
 }
 
-void Gpu_Metal_Accelerator::get_results_from_device(void *task_context, long long &computed_ns) {
+void Gpu_Metal_Accelerator::get_results_from_device(void *task_context,
+                                                    long long &computed_ns) {
    auto *task = static_cast<Task *>(task_context);
 
    // Recupera il command buffer dal task e riprende la sua proprietà.
-   id<MTLCommandBuffer> command_buffer = (__bridge_transfer id<MTLCommandBuffer>)task->sync_handle;
+   id<MTLCommandBuffer> command_buffer =
+      (__bridge_transfer id<MTLCommandBuffer>)task->sync_handle;
 
    auto t0 = std::chrono::steady_clock::now();
 
-   // Attende il completamento del kernel (op. bloccante ma va bene perchè il consumerLoop ha un
-   // solo e unico scopo: aspettare che la GPU finisca e poi copiare i dati).
+   // Attende il completamento del kernel (op. bloccante ma va bene perchè il consumerLoop ha
+   // un solo e unico scopo: aspettare che la GPU finisca e poi copiare i dati).
    [command_buffer waitUntilCompleted];
 
    auto t1 = std::chrono::steady_clock::now();

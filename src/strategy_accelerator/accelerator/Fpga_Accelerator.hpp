@@ -21,8 +21,7 @@
  */
 class Fpga_Accelerator : public IAccelerator {
  public:
-   Fpga_Accelerator(const std::string &kernel_path,
-                   const std::string &kernel_name);
+   Fpga_Accelerator(const std::string &kernel_path, const std::string &kernel_name);
    ~Fpga_Accelerator() override;
 
    // Esegue tutte le operazioni di setup una volta sola (creare contesto,
@@ -36,8 +35,7 @@ class Fpga_Accelerator : public IAccelerator {
    // Metoodi utili per i thread della pipeline interna.
    void send_data_to_device(void *task_context) override;
    void execute_kernel(void *task_context) override;
-   void get_results_from_device(void *task_context,
-                                long long &computed_ns) override;
+   void get_results_from_device(void *task_context, long long &computed_ns) override;
 
  private:
    cl_context context_{nullptr};     // Il contesto OpenCL

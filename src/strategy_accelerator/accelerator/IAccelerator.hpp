@@ -11,7 +11,8 @@
  * - Thread Consumer (stadio 3): get_results_from_device().
  *
  * !! Stiamo eseguendo i task in parallelo sull'acceleratore, ma stiamo serializzando la
- * !! finalizzazione e il download, e ciò ci permette di riutilizzare lo stesso buffer di output.
+ * !! finalizzazione e il download, e ciò ci permette di riutilizzare lo stesso buffer di
+ * !! output.
  */
 class IAccelerator {
  public:

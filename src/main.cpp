@@ -1,13 +1,13 @@
 /**
  * @file main.cpp
- * @brief Questo file orchestra l'intera applicazione, non conosce i dettagli implementativi dei
- * vari tipi di calcolo.
+ * @brief Questo file orchestra l'intera applicazione, non conosce i dettagli implementativi
+ * dei vari tipi di calcolo.
  *
  * Utilizza due pattern di design principali:
- * 1. Factory Pattern: Per delegare la creazione dell'oggetto corretto IDeviceRunner in base al tipo
- * di dispositivo scelto (CPU, GPU, FPGA).
- * 2. Strategy Pattern: Per eseguire il calcolo senza sapere quale implementazione concreta (CPU,
- * Accelerator) sia stata scelta.
+ * 1. Factory Pattern: Per delegare la creazione dell'oggetto corretto IDeviceRunner tramite la
+ * factory DeviceRunner_Factory in base al tipo di dispositivo scelto (CPU, GPU, FPGA).
+ * 2. Strategy Pattern: Per eseguire il calcolo senza sapere quale implementazione concreta
+ * (CPU, Accelerator) sia stata scelta.
  */
 
 #include "common/ComputeResult.hpp"
@@ -26,16 +26,16 @@ int main(int argc, char *argv[]) {
    std::string device_type = "cpu_ff"; // Default (CPU con ff::parallel_for)
    std::string kernel_path, kernel_name;
 
-   // Parsing degli argomenti della command line (setta anche il kernel di default) e stampa della
-   // configurazione scelta.
+   // Parsing degli argomenti della command line (setta anche il kernel di default) e stampa
+   // della configurazione scelta.
    parse_args(argc, argv, N, NUM_TASKS, device_type, kernel_path, kernel_name);
    print_configuration(N, NUM_TASKS, device_type, kernel_path, kernel_name);
 
    ComputeResult results;
 
    {
-      // Delega alla Factory la creazione della strategia di esecuzione corretta (Cpu_OMP_Runner,
-      // AcceleratorPipelineRunner, ecc.) in base al device_type.
+      // Delega alla Factory la creazione della strategia di esecuzione corretta
+      // (Cpu_OMP_Runner, AcceleratorPipelineRunner, ecc.) in base al device_type.
       std::unique_ptr<IDeviceRunner> strategy =
          create_runner_for_device(device_type, kernel_path, kernel_name);
 

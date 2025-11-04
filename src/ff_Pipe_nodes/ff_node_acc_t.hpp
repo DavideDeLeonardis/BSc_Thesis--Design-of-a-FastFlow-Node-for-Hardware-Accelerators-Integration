@@ -20,7 +20,8 @@
  * 2. Consumer (Download): Trasferisce i risultati dal device all'host.
  *
  * Permette di sovrapporre le operazioni di I/O con il calcolo, nella pipeline il task 'n' è in
- * esecuzione, mentre i dati per 'n+1' vengono caricati e i risultati di 'n-1' vengono scaricati.
+ * esecuzione, mentre i dati per 'n+1' vengono caricati e i risultati di 'n-1' vengono
+ * scaricati.
  */
 class ff_node_acc_t : public ff_node {
  public:
@@ -44,8 +45,8 @@ class ff_node_acc_t : public ff_node {
    IAccelerator *accelerator_;
    StatsCollector *stats_;
 
-   // Code per i task in ingresso dalla pipeline FF e per i task pronti per il download dal device
-   // all'host.
+   // Code per i task in ingresso dalla pipeline FF e per i task pronti per il download dal
+   // device all'host.
    BlockingQueue<void *> inQ_;
    BlockingQueue<void *> readyQ_;
 

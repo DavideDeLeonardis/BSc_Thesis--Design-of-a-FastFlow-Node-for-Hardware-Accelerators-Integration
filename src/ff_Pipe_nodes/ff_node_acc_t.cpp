@@ -122,8 +122,8 @@ void ff_node_acc_t::consumerLoop() {
 
       // Calcola il tempo dall'ultimo completamento.
       if (!first_task) {
-         auto inter_completion_duration =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - last_completion_time);
+         auto inter_completion_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+            end_time - last_completion_time);
          stats_->inter_completion_time_ns += inter_completion_duration.count();
       } else
          first_task = false;

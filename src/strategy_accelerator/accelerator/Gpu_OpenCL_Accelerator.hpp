@@ -14,8 +14,8 @@
  * @brief Implementazione di IAccelerator che gestisce l'offloading su GPU.
  *
  * La pipeline interna al nodo ff_node_acc_t è composta da 2 thread:
- * - Il thread Producer esegue gli stadi di Upload e Execute, utilizzando le funzioni qui dichiarate
- * send_data_to_device() e execute_kernel().
+ * - Il thread Producer esegue gli stadi di Upload e Execute, utilizzando le funzioni qui
+ * dichiarate send_data_to_device() e execute_kernel().
  * - Il thread Consumer esegue lo stadio di Download, utilizzando la funzione qui dichiarata
  * get_results_from_device().
  */
@@ -43,8 +43,8 @@ class Gpu_OpenCL_Accelerator : public IAccelerator {
    cl_program program_{nullptr};     // Il programma OpenCL (kernel compilato)
    cl_kernel kernel_{nullptr};       // Il kernel OpenCL (func da eseguire)
 
-   // Incapsula la logica per l'acquisizione, il rilascio e la riallocazione dei buffer di memoria
-   // sul device.
+   // Incapsula la logica per l'acquisizione, il rilascio e la riallocazione dei buffer di
+   // memoria sul device.
    std::unique_ptr<BufferManager> buffer_manager_;
 
    std::string kernel_path_;

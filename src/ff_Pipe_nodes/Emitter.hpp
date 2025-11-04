@@ -21,8 +21,8 @@ class Emitter : public ff_node {
       a.resize(n);
       b.resize(n);
       c.resize(n);
-      // ? Usiamo 2 vettori con dati diversi cosi un compilatore estremamente intelligente non bara
-      // ? e non trasforma la somma in una moltiplicazione (2 * a[i]).
+      // ? Usiamo 2 vettori con dati diversi cosi un compilatore estremamente intelligente non
+      // ? bara e non trasforma la somma in una moltiplicazione (2 * a[i]).
       for (size_t i = 0; i < n; ++i) {
          a[i] = int(i);
          b[i] = int(2 * i);

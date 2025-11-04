@@ -12,10 +12,11 @@
 
 /**
  * @brief Classe base astratta per tutte le strategie di esecuzione su CPU.
- * Utilizza il "Template Method Pattern". Il metodo 'execute' contiene lo scheletro dell'algoritmo,
- * valido per tutte le CPU (validazione, init dati, timing, loop sui task). Viene lasciato un buco
- * (il metodo astratto 'execute_parallel_loop') che le sottoclassi (CpuOmpRunner, CpuFfRunner)
- * devono implementare con la loro logica di parallelizzazione specifica.
+ * Utilizza il "Template Method Pattern". Il metodo 'execute' contiene lo scheletro
+ * dell'algoritmo, valido per tutte le CPU (validazione, init dati, timing, loop sui task).
+ * Viene lasciato un buco (il metodo astratto 'execute_parallel_loop') che le sottoclassi
+ * (CpuOmpRunner, CpuFfRunner) devono implementare con la loro logica di parallelizzazione
+ * specifica.
  */
 class AbstractCpuRunner : public IDeviceRunner {
  public:

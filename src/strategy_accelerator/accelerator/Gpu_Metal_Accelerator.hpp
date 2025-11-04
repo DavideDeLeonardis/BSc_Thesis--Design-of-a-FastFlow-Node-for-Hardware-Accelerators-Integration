@@ -30,12 +30,11 @@ class Gpu_Metal_Accelerator : public IAccelerator {
 
  private:
    // --- Oggetti Metal ---
-   void *device_{nullptr};        // Puntatore al device Metal (id<MTLDevice>).
-   void *command_queue_{nullptr}; // Puntatore alla coda di comandi (id<MTLCommandQueue>).
-   void *library_{nullptr};       // Puntatore alla libreria dei kernel compilati (id<MTLLibrary>).
+   void *device_{nullptr};          // Puntatore al device Metal (id<MTLDevice>).
+   void *command_queue_{nullptr};   // Puntatore alla coda di comandi (id<MTLCommandQueue>).
+   void *library_{nullptr};         // Puntatore alla libreria dei kernel compilati (id<MTLLibrary>).
    void *kernel_function_{nullptr}; // Puntatore alla funzione kernel specifica (id<MTLFunction>).
-   void *pipeline_state_{
-      nullptr}; // Puntatore allo stato della pipeline di calcolo (id<MTLComputePipelineState>).
+   void *pipeline_state_{nullptr}; // Puntatore allo stato della pipeline di calcolo (id<MTLComputePipelineState>).
 
    // La logica del pool di buffer è incapsulata in un oggetto specifico per Metal.
    std::unique_ptr<MetalBufferManager> buffer_manager_;

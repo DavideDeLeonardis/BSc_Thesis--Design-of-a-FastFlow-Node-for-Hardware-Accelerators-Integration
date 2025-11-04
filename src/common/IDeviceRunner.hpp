@@ -6,8 +6,8 @@
 /**
  * @brief Interfaccia per una strategia di esecuzione.
  *
- * Definisce un'unica operazione, 'execute', che il main può chiamare, non sapendo se sta eseguendo
- * su CPU o su acceleratore.
+ * Definisce un'unica operazione, 'execute', che il main può chiamare, non sapendo se sta
+ * eseguendo su CPU o su acceleratore.
  */
 class IDeviceRunner {
  public:

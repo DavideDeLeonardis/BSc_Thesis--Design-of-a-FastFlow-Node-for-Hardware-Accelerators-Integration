@@ -52,8 +52,9 @@ void parse_args(int argc, char *argv[], size_t &N, size_t &NUM_TASKS, std::strin
    }
 
    if (N == 0 || NUM_TASKS == 0) {
-      std::cerr << "\n[FATAL] La dimensione dei vettori (N) o del numero dei task (NUM_TASKS) non "
-                   "può essere 0.\n";
+      std::cerr
+         << "\n[FATAL] La dimensione dei vettori (N) o del numero dei task (NUM_TASKS) non "
+            "può essere 0.\n";
       exit(EXIT_FAILURE);
    }
 
@@ -126,13 +127,15 @@ PerformanceData calculate_metrics(const ComputeResult &results) {
    // Tempo totale che la pipeline impiega per processare tutti i task (in sec).
    metrics.elapsed_s = results.elapsed_ns / 1.0e9;
    // Tempo medio per un task dall'ingresso all'uscita del nodo (in ms).
-   metrics.avg_InNode_time_ms = (results.total_InNode_time_ns / results.tasks_completed) / 1.0e6;
+   metrics.avg_InNode_time_ms =
+      (results.total_InNode_time_ns / results.tasks_completed) / 1.0e6;
    // Tempo medio del singolo calcolo sull'acceleratore, senza overhead (in ms).
    metrics.avg_computed_ms = (results.computed_ns / results.tasks_completed) / 1.0e6;
    // Costo medio di gestione: trasferimento dati, uso delle code, etc.
    metrics.avg_overhead_ms = metrics.avg_InNode_time_ms - metrics.avg_computed_ms;
    // Task totali processati al secondo.
-   metrics.throughput = (metrics.elapsed_s > 0) ? (results.tasks_completed / metrics.elapsed_s) : 0;
+   metrics.throughput =
+      (metrics.elapsed_s > 0) ? (results.tasks_completed / metrics.elapsed_s) : 0;
 
    return metrics;
 }

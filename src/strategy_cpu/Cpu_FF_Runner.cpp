@@ -4,8 +4,8 @@ Cpu_FF_Runner::Cpu_FF_Runner(const std::string &kernel_name)
     : AbstractCpuRunner(kernel_name, "CPU Parallel FF") {}
 
 /**
- * @brief Implementazione del loop parallelo con FastFlow. Questa funzione viene chiamata dal metodo
- * execute() della classe base AbstractCpuRunner.
+ * @brief Implementazione del loop parallelo con FastFlow. Questa funzione viene chiamata dal
+ * metodo execute() della classe base AbstractCpuRunner.
  */
 void Cpu_FF_Runner::execute_parallel_loop(long start, long end) {
    // Parallelizza il calcolo usando dell'operazione polinomiale usando ff_parallel_for

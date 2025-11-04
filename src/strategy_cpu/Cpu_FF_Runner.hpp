@@ -5,7 +5,8 @@
 #include <string>
 
 /**
- * @brief Strategia concreta che esegue il calcolo su CPU utilizzando il parallel_for di FastFlow.
+ * @brief Strategia concreta che esegue il calcolo su CPU utilizzando il parallel_for di
+ * FastFlow.
  */
 class Cpu_FF_Runner : public AbstractCpuRunner {
  public:
