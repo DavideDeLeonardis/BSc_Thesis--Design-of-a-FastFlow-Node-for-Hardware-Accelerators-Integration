@@ -3,7 +3,7 @@
 
 /**
  * @brief Struttura usata per contenere le metriche di performance calcolate a partire dai dati
- * raccolti in StatesCollector.
+ * raccolti in StatsCollector.
  */
 struct PerformanceData {
    double avg_service_time_ms = 0.0;
