@@ -92,7 +92,8 @@ target_compile_options(tesi-exec PRIVATE -Wno-deprecated-declarations)
 
 # Diciamo a CMake di trattare il file .mm come Objective-C++ e di attivare ARC.
 if(APPLE)
-    set_source_files_properties(src/strategy_accelerator/accelerator/Gpu_Metal_Accelerator.mm PROPERTIES
+    set_source_files_properties(
+        src/strategy_accelerator/accelerator/Gpu_Metal_Accelerator.mm PROPERTIES
         LANGUAGE OBJCXX
         COMPILE_FLAGS "-fobjc-arc"
     )
