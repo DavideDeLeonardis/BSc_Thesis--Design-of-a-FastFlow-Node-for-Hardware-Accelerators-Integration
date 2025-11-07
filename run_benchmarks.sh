@@ -6,17 +6,17 @@ OUTPUT_FILE="Measurements.csv"
 N_VALUES=(10000 1000000 7449999)
 NUM_TASKS=100
 
-EXECUTABLE="./build/tesi-exec"
 # Controlla se il file eseguibile esiste. Se non esiste, avvia la build automatica.
+EXECUTABLE="./build/tesi-exec"
 if [ ! -f "$EXECUTABLE" ]; then
     echo "--- Eseguibile non trovato: $EXECUTABLE ---"
-    echo "Avvio della build. (rm -rf build; cmake -B build && cmake --build build)..."
+    echo "Avvio della build."
     
     rm -rf build
     cmake -B build && cmake --build build
     
     if [ $? -ne 0 ]; then
-        echo "ERRORE: Compilazione fallita. Lo script non può continuare."
+        echo "ERRORE: Compilazione fallita."
         exit 1
     fi
     
@@ -32,10 +32,9 @@ else
 fi
 
 # Pulisce il file CSV precedente e scrive l'intestazione.
-echo "OS,N,Tasks,Device,Kernel,Avg_Service_Time_ms,Avg_In_Node_Time_ms,Avg_Compute_Time_ms,Avg_Overhead_Time_ms,Throughput_tasks_s,Total_Time_s" > $OUTPUT_FILE
+echo "OS,N,Tasks,Device,Kernel,Avg_Service_Time_ms,Avg_In_Node_Time_ms,Avg_Compute_Time_ms,Avg_Overhead_Time_ms,Throughput_tasks_s,Total_Time_s,Status" > $OUTPUT_FILE
 
 # Funzione helper per eseguire un singolo test e fare il parsing dell'output.
-# Argomenti: 1:N, 2:Device, 3:KernelArg (path o nome), 4:KernelName (per CSV)
 run_test() {
     local N=$1
     local DEVICE=$2
@@ -52,7 +51,6 @@ run_test() {
     if [ $? -ne 0 ]; then
         echo "Run FAILED for $DEVICE, $KERNEL_NAME, N=$N"
         echo "$OS_NAME,$N,$NUM_TASKS,$DEVICE,$KERNEL_NAME,,,,,,,FAILED" >> $OUTPUT_FILE
-        # Stampa l'errore
         echo "$output"
         return
     fi
@@ -66,7 +64,7 @@ run_test() {
     TOTAL_TIME=$(echo "$output" | grep "Total Time Elapsed" | awk -F: '{print $2}' | awk '{print $1}')
 
     # Scrive la riga CSV.
-    echo "$OS_NAME,$N,$NUM_TASKS,$DEVICE,$KERNEL_NAME,$SERVICE_TIME,$IN_NODE_TIME,$COMPUTE_TIME,$OVERHEAD_TIME,$THROUGHPUT,$TOTAL_TIME" >> $OUTPUT_FILE
+    echo "$OS_NAME,$N,$NUM_TASKS,$DEVICE,$KERNEL_NAME,$SERVICE_TIME,$IN_NODE_TIME,$COMPUTE_TIME,$OVERHEAD_TIME,$THROUGHPUT,$TOTAL_TIME,Success" >> $OUTPUT_FILE
 }
 
 # Rileva il sistema operativo.
