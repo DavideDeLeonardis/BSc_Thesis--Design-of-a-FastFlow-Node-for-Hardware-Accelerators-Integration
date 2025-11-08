@@ -1,6 +1,5 @@
 /external/fastflow
 /build/
-/cmake
 
 .qodo
 .DS_Store
