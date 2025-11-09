@@ -1,5 +1,6 @@
 #include "Helpers.hpp"
 
+#include "../common/device_constants.h"
 #include <algorithm>
 #include <iostream>
 
@@ -24,7 +25,21 @@ static std::string extractKernelName(const std::string &path) {
 }
 
 /**
- * Helper per il parsing degli argomenti della riga di comando.
+ * Helper interno per il parsing rigoroso di un argomento numerico.
+ */
+static size_t parse_numeric_arg(const char *arg_str) {
+   std::string s(arg_str);
+   size_t pos = 0;
+   unsigned long long value = std::stoull(s, &pos, 10);
+
+   if (pos != s.length())
+      throw std::invalid_argument("L'argomento '" + s + "' contiene caratteri non numerici.");
+
+   return static_cast<size_t>(value);
+}
+
+/**
+ * Funzione per il parsing degli argomenti della riga di comando.
  */
 void parse_args(int argc, char *argv[], size_t &N, size_t &NUM_TASKS, std::string &device_type,
                 std::string &kernel_path, std::string &kernel_name) {
@@ -38,47 +53,53 @@ void parse_args(int argc, char *argv[], size_t &N, size_t &NUM_TASKS, std::strin
 
    try {
       if (argc > 1)
-         N = std::stoull(argv[1]);
+         N = parse_numeric_arg(argv[1]);
       if (argc > 2)
-         NUM_TASKS = std::stoull(argv[2]);
-      if (argc > 3)
-         device_type = argv[3];
-      if (argc > 4)
-         kernel_path = argv[4];
+         NUM_TASKS = parse_numeric_arg(argv[2]);
    } catch (const std::invalid_argument &e) {
-      std::cerr << "[ERROR] Invalid numeric argument provided.\n\n";
+      std::cerr << "\n[ERROR] Not valid args for N or NUM_TASKS. Integer values required.\n";
       print_usage(argv[0]);
-      exit(-1);
+      exit(EXIT_FAILURE);
    }
+
+   if (argc > 3)
+      device_type = argv[3];
+   if (argc > 4)
+      kernel_path = argv[4];
 
    if (N == 0 || NUM_TASKS == 0) {
       std::cerr
-         << "\n[FATAL] La dimensione dei vettori (N) o del numero dei task (NUM_TASKS) non "
-            "può essere 0.\n";
+         << "\n[ERROR] The size of vectors (N) or the number of tasks (NUM_TASKS) cannot be "
+            "0.\n";
+      print_usage(argv[0]);
       exit(EXIT_FAILURE);
    }
 
    // Per GPU e FPGA, se non specifico un kernel di default imposta polynomial_op.
-   if (device_type == "gpu_opencl" && kernel_path.empty())
-      kernel_path = "kernels/gpu/polynomial_op.cl";
-   else if (device_type == "gpu_metal" && kernel_path.empty())
-      kernel_path = "kernels/gpu/polynomial_op.metal";
-   else if (device_type == "fpga" && kernel_path.empty())
-      kernel_path = "kernels/fpga/krnl_polynomial_op.xclbin";
+   if (kernel_path.empty()) {
+      if (device_type == device::GPU_CL)
+         kernel_path = "kernels/gpu/polynomial_op.cl";
+      else if (device_type == device::GPU_MTL)
+         kernel_path = "kernels/gpu/polynomial_op.metal";
+      else if (device_type == device::FPGA)
+         kernel_path = "kernels/fpga/krnl_polynomial_op.xclbin";
+   }
 
    // Per GPU e FPGA, estraggo il nome del kernel dal percorso specificato.
-   if (device_type == "gpu_opencl" || device_type == "fpga" || device_type == "gpu_metal")
+   if (device_type == device::GPU_CL || device_type == device::FPGA ||
+       device_type == device::GPU_MTL)
       kernel_name = extractKernelName(kernel_path);
 
    // Per CPU, se non specifico un kernel imposta polynomial_op, altrimenti lo estrae dal nome.
-   if (kernel_path.empty() && (device_type == "cpu_ff" || device_type == "cpu_omp"))
+   if (kernel_path.empty() &&
+       (device_type == device::CPU_FF || device_type == device::CPU_OMP))
       kernel_name = "polynomial_op";
    else
       kernel_name = extractKernelName(kernel_path);
 }
 
 /**
- * Helper per stampare la configurazione di esecuzione del programma.
+ * Funzione per stampare la configurazione di esecuzione del programma.
  */
 void print_configuration(size_t N, size_t NUM_TASKS, const std::string &device_type,
                          const std::string &kernel_path, const std::string &kernel_name) {
@@ -95,7 +116,7 @@ void print_configuration(size_t N, size_t NUM_TASKS, const std::string &device_t
 }
 
 /**
- * Helper per stampare le istruzioni d'uso.
+ * Funzione per stampare le istruzioni d'uso.
  */
 void print_usage(const char *prog_name) {
    std::cerr << "\nUsage: " << prog_name << " [N] [NUM_TASKS] [DEVICE] [KERNEL]\n"
@@ -141,7 +162,7 @@ PerformanceData calculate_metrics(const ComputeResult &results) {
 }
 
 /**
- * Helper per calcolare e stampare le statistiche finali.
+ * Funzione per calcolare e stampare le statistiche finali.
  */
 void print_metrics(size_t N, size_t NUM_TASKS, const std::string &device_type,
                    const std::string &kernel_name, const PerformanceData &metrics,

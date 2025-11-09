@@ -28,7 +28,7 @@ void print_usage(const char *prog_name);
 PerformanceData calculate_metrics(const ComputeResult &results);
 
 /**
- * @brief Stampa le statistiche finali del benchmark in un formato leggibile,
+ * Stampa le statistiche finali del benchmark in un formato leggibile,
  * adattando l'output per CPU o acceleratori.
  */
 void print_metrics(size_t N, size_t NUM_TASKS, const std::string &device_type,
