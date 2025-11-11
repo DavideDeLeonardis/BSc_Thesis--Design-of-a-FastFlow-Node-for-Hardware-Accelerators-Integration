@@ -7,6 +7,7 @@
 
 /**
  * Helper per il parsing degli argomenti della riga di comando.
+ * Setta anche il kernel di default.
  */
 void parse_args(int argc, char *argv[], size_t &N, size_t &NUM_TASKS, std::string &device_type,
                 std::string &kernel_path, std::string &kernel_name);
