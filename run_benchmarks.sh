@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script per eseguire tutti i benchmark e raccogliere i risultati in un file CSV.
+# Script per eseguire tutti i benchmark e raccogliere i risultati in un file CSV in directory measurement/
 
 OUTPUT_DIR="measurement"
 OUTPUT_FILE="$OUTPUT_DIR/Measurements.csv"
