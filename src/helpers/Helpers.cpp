@@ -39,11 +39,17 @@ static size_t parse_numeric_arg(const char *arg_str) {
 }
 
 /**
- * Funzione per il parsing degli argomenti della riga di comando. Setta anche il kernel di
- * default.
+ * Funzione per il parsing e il setting di default degli argomenti della riga di comando.
  */
 void parse_args(int argc, char *argv[], size_t &N, size_t &NUM_TASKS, std::string &device_type,
                 std::string &kernel_path, std::string &kernel_name) {
+
+   N = 1000000;
+   NUM_TASKS = 20;
+   device_type = device::CPU_FF;
+   kernel_path = "";
+   kernel_name = "";
+
    if (argc > 1 && (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help")) {
       print_usage(argv[0]);
       exit(0);
@@ -63,18 +69,17 @@ void parse_args(int argc, char *argv[], size_t &N, size_t &NUM_TASKS, std::strin
       exit(EXIT_FAILURE);
    }
 
+   if (N == 0 || NUM_TASKS == 0) {
+      std::cerr << "\n[ERROR] The size of vectors (N) or the number of tasks (NUM_TASKS) "
+                   "cannot be 0.\n";
+      print_usage(argv[0]);
+      exit(EXIT_FAILURE);
+   }
+
    if (argc > 3)
       device_type = argv[3];
    if (argc > 4)
       kernel_path = argv[4];
-
-   if (N == 0 || NUM_TASKS == 0) {
-      std::cerr << "\n[ERROR] The size of vectors (N) or the number of tasks (NUM_TASKS) "
-                   "cannot be "
-                   "0.\n";
-      print_usage(argv[0]);
-      exit(EXIT_FAILURE);
-   }
 
    // Per GPU e FPGA, se non specifico un kernel di default imposta polynomial_op.
    if (kernel_path.empty()) {
