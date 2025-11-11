@@ -1,7 +1,8 @@
 #pragma once
 
 /**
- * @brief Definisce i nomi stringa costanti per i tipi di device.
+ * @brief Definisce i nomi stringa costanti per i tipi di device
+ * di calcolo supportati dal sistema.
  */
 namespace device {
 
