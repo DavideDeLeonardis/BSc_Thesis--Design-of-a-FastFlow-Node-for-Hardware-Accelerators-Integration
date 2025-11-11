@@ -1,8 +1,8 @@
 Font: Cambria
 Codice: Courier New
-Capitoli: 16pt
-Sezioni: 14pt
-Sottosezione: 13pt
+Capitoli: 18pt
+Sezioni: 16pt
+Sottosezione: 14pt
 Testo: 12pt
 
 TITOLO:
