@@ -5,7 +5,8 @@
 
 /**
  * @brief Struttura usata per raccogliere risultati generati dai 2 thread interni del nodo
- * ff_node_acc_t e passarli al thread principale in AcceleratorPipelineRunner.
+ * ff_node_acc_t e passarli al thread principale di FF in nella strategia di esecuzione
+ * AcceleratorPipelineRunner.
  */
 struct StatsCollector {
    std::atomic<size_t> tasks_processed{0};

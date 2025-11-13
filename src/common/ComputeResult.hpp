@@ -3,14 +3,14 @@
 #include <cstddef>
 
 /**
- * @brief Struct dati per i risultati di qualsiasi strategia.
+ * @brief Struct dati generica per i risultati di qualsiasi strategia.
  *
  * Viene restituita dal metodo 'execute' di IDeviceRunner e contiene tutte le metriche di
  * performance raccolte durante l'esecuzione, sia essa su CPU o su acceleratore. Trasporta
- * i dati grezzi dalla strategia al main.
+ * i dati grezzi dalla singola strategia (es. CPU_OMP_Runner, AcceleratorPipelineRunner, ecc) 
+ * al main.
  */
 struct ComputeResult {
-
    long long elapsed_ns = 0;               // Tempo totale misurato dall'inizio alla fine dell'esecuzione dei task.
    size_t tasks_completed = 0;             // Numero totale di task effettivamente completati
    long long computed_ns = 0;              // Tempo effettivo di calcolo del kernel
