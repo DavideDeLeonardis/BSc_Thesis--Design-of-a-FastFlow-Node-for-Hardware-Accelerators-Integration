@@ -112,7 +112,12 @@ FPGA: Analisi delle performance HLS (perché è più lento? Overhead VM/PCIe, de
 Capitolo 6: Conclusioni
 6.1 Sintesi del Lavoro e Raggiungimento degli Obiettivi
 6.2 Limitazioni e Problemi Riscontrati
-(es. nome kernel uguale a nome kernel file, incompatibilità di versione Vitis, limiti di memoria FPGA su VM, gestione errori con exit(), design specializzato per kernel 2-in/1-out).
+   (es. limite N su FPGA, 
+   nome kernel uguale a nome kernel file, 
+   incompatibilità di versione Vitis, 
+   gestione errori con exit(), 
+   design specializzato per kernel 2-in/1-out
+   FF non funziona bene con 3 nodi).
 6.4 Considerazioni Personali
 (Cosa ha imparato dal progetto, corsi universitari più utili, difficoltà e soddisfazioni).
 
