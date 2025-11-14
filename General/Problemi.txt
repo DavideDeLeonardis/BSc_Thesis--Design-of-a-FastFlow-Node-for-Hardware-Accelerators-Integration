@@ -114,3 +114,7 @@ Questo è stato il primo e più importante errore concettuale che abbiamo corret
 Problema: Inizialmente, lei aveva una classe CpuAccelerator che simulava di essere un acceleratore. Per eseguire il calcolo, implementava un semplice ciclo for sequenziale all'interno della funzione get_results_blocking.
 Perché era un Errore Logico: Confrontare un'architettura hardware altamente parallela (GPU/FPGA) con un'esecuzione su un singolo core della CPU non è un confronto equo. La traccia della tesi richiedeva esplicitamente il "parallelismo shared memory/thread sulla CPU multicore".
 Soluzione (Cambio di Architettura): Abbiamo eliminato la classe CpuAccelerator. L'abbiamo sostituita con un percorso di esecuzione completamente separato nel main che chiama le funzioni executeCpu_FF_Tasks e executeCpu_OMP_Tasks. Queste funzioni usano ff::ParallelFor e #pragma omp parallel for, implementando il vero parallelismo su CPU e fornendo una baseline di confronto robusta e corretta.
+
+
+Durante lo sviluppo, è emersa un'incompatibilità di versione tra la piattaforma Xilinx (2022.x) e gli strumenti Vitis utilizzati (2023.x), che ha impedito il completamento della fase di emulazione hardware (hw_emu). 
+La verifica funzionale è stata completata con successo tramite emulazione software (sw_emu) e la validazione finale delle performance è stata eseguita direttamente sull'hardware fisico.
