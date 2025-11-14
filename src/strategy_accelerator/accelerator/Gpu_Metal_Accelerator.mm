@@ -160,7 +160,7 @@ bool Gpu_Metal_Accelerator::initialize() {
    id<MTLDevice> dev = (__bridge id<MTLDevice>)device_;
    command_queue_ = (__bridge_retained void *)[dev newCommandQueue];
    if (!command_queue_) {
-      std::cerr << "[ERROR] MetalAccelerator: Failed to create command queue.\n";
+      std::cerr << "[ERROR] Gpu_Metal_Accelerator: Failed to create command queue.\n";
       exit(EXIT_FAILURE);
    }
 
@@ -170,7 +170,7 @@ bool Gpu_Metal_Accelerator::initialize() {
    // Legge il kernel Metal e verifica che il percorso sia un file valido.
    std::ifstream kernelFile(kernel_path_);
    if (!kernelFile.is_open() || !std::filesystem::is_regular_file(kernel_path_)) {
-      std::cerr << "[ERROR] MetalAccelerator: Could not open kernel file: " << kernel_path_
+      std::cerr << "[ERROR] Gpu_Metal_Accelerator: Could not open kernel file: " << kernel_path_
                 << "\n";
       exit(EXIT_FAILURE);
    }
@@ -185,7 +185,11 @@ bool Gpu_Metal_Accelerator::initialize() {
                         options:nil
                           error:&error];
    if (!lib) {
-      std::cerr << "[ERROR] MetalAccelerator: Kernel library compilation "
+      std::cerr << "\n\n------- ERRORE DI COMPILAZIONE KERNEL METAL -------\n";
+      std::cerr << [error.localizedDescription UTF8String] << "\n";
+      std::cerr << "--------------------------------------------------\n\n";
+
+      std::cerr << "[ERROR] Gpu_Metal_Accelerator: Kernel library compilation "
                    "failed. Check kernel file type.\n";
       exit(EXIT_FAILURE);
    }
@@ -195,7 +199,7 @@ bool Gpu_Metal_Accelerator::initialize() {
    id<MTLFunction> func =
       [lib newFunctionWithName:[NSString stringWithUTF8String:kernel_name_.c_str()]];
    if (!func) {
-      std::cerr << "[ERROR] MetalAccelerator: Failed to find kernel function '" << kernel_name_
+      std::cerr << "[ERROR] Gpu_Metal_Accelerator: Failed to find kernel function '" << kernel_name_
                 << "'.\n";
       exit(EXIT_FAILURE);
    }
@@ -205,7 +209,7 @@ bool Gpu_Metal_Accelerator::initialize() {
    id<MTLComputePipelineState> pso = [dev newComputePipelineStateWithFunction:func
                                                                         error:&error];
    if (!pso) {
-      std::cerr << "[ERROR] MetalAccelerator: Failed to create pipeline state "
+      std::cerr << "[ERROR] Gpu_Metal_Accelerator: Failed to create pipeline state "
                    "object.\n";
       if (error) {
          std::cerr << "Reason: " << [[error localizedDescription] UTF8String] << "\n";
