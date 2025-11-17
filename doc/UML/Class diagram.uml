@@ -1,5 +1,6 @@
 @startuml
 '--- Stile ---
+allow_mixing
 skinparam classAttributeIconSize 0
 skinparam classFontSize 10
 skinparam classAttributeFontSize 9
@@ -23,15 +24,15 @@ skinparam stereotype {
 }
 
 ' === 1. Il Client (main) e la Factory ===
-package "Client" {
-  class main {
-    + main()
-  }
-
-  class DeviceRunner_Factory <<factory>> {
-    + {static} create_runner_for_device(type, ...) : IDeviceRunner*
-  }
+' Package rimosso come da richiesta
+class MAIN {
+  + main()
 }
+
+class DeviceRunner_Factory <<factory>> {
+  + {static} create_runner_for_device(type, ...) : IDeviceRunner*
+}
+
 
 ' === 2. L'Interfaccia Comune e le Struct Dati ===
 package "Interfaccia Comune" {
@@ -50,15 +51,15 @@ package "Interfaccia Comune" {
     + n : size_t
     + id : size_t
     + buffer_idx : size_t
+    + arrival_time: time_point
   }
   
   IDeviceRunner ..> ComputeResult : "restituisce"
 }
 
 ' === 3. Famiglia 1: Strategie CPU ===
-' (Rimosso il package esterno "Implementazioni delle Strategie")
 package "Strategie CPU" {
-  abstract class AbstractCpuRunner {
+  abstract class AbstractCpuRunner <<strategy>> {
     # {abstract} execute_parallel_loop(start, end)
     # execute_kernel_work(i)
     ---
@@ -74,7 +75,7 @@ package "Strategie CPU" {
 
 ' === 4. Famiglia 2: Strategie Acceleratore (Adattatore) ===
 package "Strategie Acceleratore" {
-  class AcceleratorPipelineRunner {
+  class AcceleratorPipelineRunner <<strategy>>/<<adapter>> {
     - accelerator : IAccelerator*
     ---
     + execute(N, NUM_TASKS) : ComputeResult
@@ -87,6 +88,8 @@ package "Strategie Acceleratore" {
     + svc_init()
     + svc(Task*)
     + svc_end()
+    + procucerLoop()
+    + consumerLoop()
   }
 
   class StatsCollector <<struct>> {
@@ -94,6 +97,7 @@ package "Strategie Acceleratore" {
     + count_promise : promise
     + computed_ns : atomic
     + total_InNode_time_ns : atomic
+    + inter_completion_time_ns : atomic
   }
 }
 
@@ -117,8 +121,8 @@ package "Logica Hardware (IAccelerator)" {
 
 
 ' === Relazioni Principali (collegano i package) ===
-main ..> DeviceRunner_Factory : "usa"
-main ..> IDeviceRunner : "usa"
+MAIN ..> DeviceRunner_Factory : "usa"
+MAIN ..> IDeviceRunner : "usa"
 DeviceRunner_Factory ..> IDeviceRunner : "crea"
 
 ' Le strategie implementano l'interfaccia
@@ -130,25 +134,36 @@ AbstractCpuRunner <|-- Cpu_OMP_Runner
 AbstractCpuRunner <|-- Cpu_FF_Runner
 
 ' Dettagli implementazione Acceleratore
-AcceleratorPipelineRunner o-- "1" IAccelerator : "adatta (has-a)"
+AcceleratorPipelineRunner o-- "1" IAccelerator : "adatta->"
 AcceleratorPipelineRunner ..> ff_node_acc_t : "crea e usa"
-AcceleratorPipelineRunner ..> StatsCollector : "crea"
+AcceleratorPipelineRunner ..> StatsCollector : "crea->"
 ff_node_acc_t ..> IAccelerator : "usa"
 ff_node_acc_t ..> StatsCollector : "usa (aggiorna)"
-ff_node_acc_t ..> Task : "processa"
-IAccelerator ..> Task : "opera su"
 
-' === FORZATURA LAYOUT ===
-' Riga 1 (Top): Client e Interfaccia (affiancati)
-"Client" -[hidden]right- "Interfaccia Comune"
+' Queste frecce "all'indietro" non influenzano il layout
+ff_node_acc_t ..up..> Task : "processa ->"
+IAccelerator ..up..> Task : "opera su -->"
 
-' Riga 2 (Mid): Le due strategie (affiancate)
-"Strategie CPU" -[hidden]right- "Strategie Acceleratore"
 
-' Riga 3 (Bottom): La logica hardware (posizionata sotto le strategie)
-"Strategie CPU" -[hidden]down- "Logica Hardware (IAccelerator)"
+' === FORZATURA LAYOUT (con "together") ===
+' Questo raggruppa le due strategie sulla stessa riga
 
-' Link verticali tra le righe
-"Interfaccia Comune" -[hidden]down- "Strategie Acceleratore"
-"Client" -[hidden]down- "Strategie CPU"
+' Riga 1 -> Riga 2 (Agganciato a "main" invece che "Client")
+MAIN -[hidden]down- "Interfaccia Comune"
+
+' Raggruppa le due strategie sulla stessa riga
+together {
+  package "Strategie CPU"
+  package "Strategie Acceleratore"
+}
+
+' Riga 2 -> Riga 3 (collegando al gruppo)
+"Interfaccia Comune" -[hidden]down- "Strategie CPU"
+
+' Riga 3 -> Riga 4
+"Strategie Acceleratore" -[hidden]down- "Logica Hardware (IAccelerator)"
+
+' Allineamento finale per tenere la griglia
+"Strategie CPU" -[hidden]right- "Logica Hardware (IAccelerator)"
+
 @enduml

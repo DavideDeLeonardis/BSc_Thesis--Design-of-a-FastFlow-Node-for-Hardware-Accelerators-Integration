@@ -1,6 +1,5 @@
-!! Migliora diagramma delle classi
 !! Aggiungi citazioni
-!! Aggiungi captions a immagini
+!! Aggiungi captions a immagini e riferimenti dal testo
 
 Font: Cambria
 Codice: Courier New
