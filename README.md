@@ -22,7 +22,7 @@ cmake -B build && cmake --build build
 
 ### Esecuzione
 
-L'eseguibile accetta 4 argomenti opzionali: [N] [NUM_TASKS] [DEVICE] [KERNEL].
+L'eseguibile accetta 4 argomenti opzionali posizionali: [N] [NUM_TASKS] [DEVICE] [KERNEL].
 
 ```
 # Esecuzione su CPU (con ff::parallel_for)
@@ -49,7 +49,7 @@ cmake -B build && cmake --build build
 
 ### Esecuzione
 
-L'eseguibile accetta 4 argomenti opzionali: [N] [NUM_TASKS] [DEVICE] [KERNEL].
+L'eseguibile accetta 4 argomenti opzionali posizionali: [N] [NUM_TASKS] [DEVICE] [KERNEL].
 
 ```
 # Esecuzione su CPU (con ff::parallel_for)
