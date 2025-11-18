@@ -127,7 +127,7 @@ Capitolo 6: Conclusioni
    6.4 Considerazioni Personali
       (Cosa ha imparato dal progetto, corsi universitari più utili, difficoltà e soddisfazioni).
       Questa analisi evidenzia un punto fondamentale: le CPU e le GPU moderne sono macchine potentissime e altamente ottimizzate per questo tipo di accesso lineare alla memoria, dotate di cache sofisticate e bus di memoria molto ampi.
-      La vera forza di un'FPGA non è eseguire task semplici, ma implementare pipeline di calcolo complesse e customizzate che non esistono su una CPU/GPU. Ad esempio, algoritmi di compressione video, elaborazione di segnali radio o crittografia, dove i dati fluiscono attraverso una catena di montaggio hardware su misura.
+      La vera forza di un'FPGA non è eseguire task semplici, ma implementare pipeline di calcolo complesse e customizzate che non esistono su una CPU/GPU, ma dove i dati fluiscono attraverso una catena di montaggio hardware su misura.
       Per un task così semplice come una somma vettoriale, l'overhead di comunicazione con la scheda e la sua architettura di memoria generica non riescono a competere. Usare un'FPGA per una somma vettoriale è come usare un bisturi chirurgico specializzato per aprire una scatola di cartone: funziona, ma un semplice taglierino (la CPU/GPU) è più efficiente per quel compito specifico.
 
       // Perché Non è Stata Usata una Pipeline FastFlow Interna?
@@ -139,7 +139,6 @@ Capitolo 6: Conclusioni
          L'architettura attuale, con una pipeline manuale incapsulata in ff_node_acc_t, è superiore perché:
             Incapsula lo Stato: Il ff_node_acc_t "possiede" l'acceleratore e tutte le sue risorse (come il pool di buffer). Tutta la logica e lo stato sono confinati in un unico componente.
             Semplifica la Logica: La comunicazione tra i thread interni è banale, poiché condividono lo stato dello stesso oggetto.
-
 
       // Se volessi sostituire la somma vettoriale con un altro kernel, per esempio una moltiplicazione tra matrici, non dovresti toccare l'infrastruttura principale del progetto (ff_node_acc_t, la logica della pipeline, etc.).
          Le modifiche sarebbero mirate e contenute solo nelle parti specifiche del task.
