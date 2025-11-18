@@ -142,7 +142,7 @@ Gpu_Metal_Accelerator::~Gpu_Metal_Accelerator() {
       id<MTLDevice> dev = (__bridge_transfer id<MTLDevice>)device_;
    buffer_manager_.reset();
 
-   std::cerr << "[Gpu_Metal_Accelerator] Destroyed and Metal resources released.\n";
+   std::cerr << "[Gpu_Metal_Accelerator] Destroyed and resources released.\n";
 }
 
 /**

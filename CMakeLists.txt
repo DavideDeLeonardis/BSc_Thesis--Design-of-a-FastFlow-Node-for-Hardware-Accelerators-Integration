@@ -90,7 +90,7 @@ endif()
 target_compile_definitions(tesi-exec PRIVATE CL_TARGET_OPENCL_VERSION=120)
 target_compile_options(tesi-exec PRIVATE -Wno-deprecated-declarations)
 
-# Diciamo a CMake di trattare il file .mm come Objective-C++ e di attivare ARC.
+# Tratta il file .mm come Objective-C++ e attiva ARC.
 if(APPLE)
     set_source_files_properties(
         src/strategy_accelerator/accelerator/Gpu_Metal_Accelerator.mm PROPERTIES
@@ -98,3 +98,7 @@ if(APPLE)
         COMPILE_FLAGS "-fobjc-arc"
     )
 endif()
+
+# Abilita AddressSanitizer per il debug della memoria.
+# target_compile_options(tesi-exec PRIVATE -fsanitize=address -g -fno-omit-frame-pointer)
+# target_link_options(tesi-exec PRIVATE -fsanitize=address)

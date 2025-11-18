@@ -45,7 +45,7 @@ Fpga_Accelerator::~Fpga_Accelerator() {
    if (context_)
       clReleaseContext(context_);
 
-   std::cerr << "[Fpga_Accelerator] Destroyed and OpenCL resources released.\n";
+   std::cerr << "[Fpga_Accelerator] Destroyed and resources released.\n";
 }
 
 /**

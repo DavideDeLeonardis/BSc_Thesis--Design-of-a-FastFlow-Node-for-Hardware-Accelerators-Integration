@@ -16,12 +16,22 @@ BufferManager::BufferManager(cl_context context) : context_(context) {
  */
 BufferManager::~BufferManager() {
    for (auto &buffer_set : buffer_pool_) {
-      if (buffer_set.bufferA)
+      if (buffer_set.bufferA) {
          clReleaseMemObject(buffer_set.bufferA);
-      if (buffer_set.bufferB)
+         buffer_set.bufferA = nullptr;
+      }
+      if (buffer_set.bufferB) {
          clReleaseMemObject(buffer_set.bufferB);
-      if (buffer_set.bufferC)
+         buffer_set.bufferB = nullptr;
+      }
+      if (buffer_set.bufferC) {
          clReleaseMemObject(buffer_set.bufferC);
+         buffer_set.bufferC = nullptr;
+      }
+
+      if (buffer_set.bufferA != nullptr && buffer_set.bufferB != nullptr &&
+          buffer_set.bufferC != nullptr)
+         std::cerr << "[BufferManager] Warning: Some buffers were not released properly.\n";
    }
 }
 

@@ -44,7 +44,7 @@ Gpu_OpenCL_Accelerator::~Gpu_OpenCL_Accelerator() {
    if (context_)
       clReleaseContext(context_);
 
-   std::cerr << "[Gpu_OpenCL_Accelerator] Destroyed and OpenCL resources released.\n";
+   std::cerr << "[Gpu_OpenCL_Accelerator] Destroyed and resources released.\n";
 }
 
 /**
