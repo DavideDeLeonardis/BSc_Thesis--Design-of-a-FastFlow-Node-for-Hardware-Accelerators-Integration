@@ -1,11 +1,12 @@
 !! Indice
 !! Elenco delle figure
 !! Aggiungi captions a immagini e riferimenti dal testo
-!! Citazioni
+
+
 
 Font: Cambria
 Codice: Courier New
-Capitoli: 20pt
+Capitoli: 22pt
 Sezioni: 18pt
 Sottosezione: 16pt
 Titoli paragrafi: 14pt
@@ -13,10 +14,18 @@ Testo: 12pt
 4 righe fra sottosezioni diverse
 Spazio interlinea: 1,40
 
+
+
+
 TITOLO:
    Progettazione di un nodo FastFlow per integrazione di acceleratori
 
+Indice
+
+Elenco delle figure
+
 Introduzione
+   .
 
 Capitolo 1
    1.2 Il Problema: Complessità di Integrazione
@@ -33,7 +42,6 @@ Capitolo 1
    Questi risultati sono una perfetta dimostrazione pratica della Legge di Amdahl. La parte "seriale" del nostro programma (l'inizializzazione di OpenCL) è così lenta che, anche se acceleriamo la parte "parallela" (il calcolo), il guadagno totale è negativo per un singolo task.
    Questo dimostra in modo conclusivo che l'offloading su acceleratori ha senso solo in scenari ad alto throughput, dove il costo di setup viene "spalmato" su un gran numero di operazioni.
 
-
 Capitolo 2: Fondamenti e Tecnologie Abilitanti
       2.1 Architetture a Confronto: CPU, GPU, FPGA
       Architettura CPU (Multi-core, cache, shared memory).
@@ -45,7 +53,6 @@ Capitolo 2: Fondamenti e Tecnologie Abilitanti
       2.3 API per l'Offloading Hardware
       OpenCL: Spiegare il suo ruolo di standard multipiattaforma (Contesto, Coda, Kernel .cl, Eventi).
       Apple Metal: Spiegare il suo ruolo di API nativa ad alte prestazioni per macOS (Device, Coda, Kernel .metal, Memoria Unificata).
-
 
 Capitolo 3: Progettazione dell'Architettura Software - Progetto logico
       (Il "come" e il "perché" del suo design)
@@ -63,7 +70,6 @@ Capitolo 3: Progettazione dell'Architettura Software - Progetto logico
       3.5 Pattern di Composizione: Il BufferManager
       Spiegare perché la logica del pool di buffer è stata estratta in una classe separata (Composizione) invece di usare una classe base complessa (Ereditarietà), per eliminare la duplicazione di codice tra Gpu e Fpga_Accelerator.
 
-
 Capitolo 4: Dettagli Implementativi
       (Il "codice" che realizza il design)
       ff_node_acc_t
@@ -73,7 +79,6 @@ Capitolo 4: Dettagli Implementativi
       Gpu_Metal_Accelerator: L'uso di Objective-C++ (.mm), la gestione della memoria unificata (memcpy), la compilazione da sorgente (newLibraryWithSource) e i "bridging cast" per nascondere i tipi (void*).
       4.3 Implementazione della Portabilità (CMake)
       Spiegare come CMakeLists.txt usa le direttive condizionali (if(APPLE)) per compilare e linkare file diversi (es. Fpga_Accelerator.cpp solo su Linux, Gpu_Metal_Accelerator.mm solo su macOS).
-
 
 Capitolo 5: Analisi Sperimentale e Risultati
    5.1 Setup Sperimentale (Hardware e Software)
@@ -116,7 +121,6 @@ Capitolo 5: Analisi Sperimentale e Risultati
 
          Total Time Elapsed: 254.902 s
          ------------------------------------------------------------------
-
 
 Capitolo 6: Conclusioni
    6.1 Sintesi del Lavoro e Raggiungimento degli Obiettivi
@@ -181,8 +185,8 @@ Capitolo 6: Conclusioni
                ff_node_acc_t.hpp e ff_node_acc_t.cpp: Il tuo "motore" asincrono a thread e code rimarrebbe identico. Non gli interessa quale calcolo venga eseguito; il suo compito è solo orchestrare il flusso di void* tra le code e delegare il lavoro all'acceleratore.
                La funzione main() in main.cpp: La logica di creazione della pipeline, la misurazione dei tempi e il meccanismo di verifica con promise/future rimarrebbero esattamente gli stessi. L'unica riga da cambiare sarebbe quella che crea l'adapter specifico (es. accelerator = std::make_unique<MatrixMulGpuAccelerator>();).
 
-
 Bibliografia
+   .
 
 Codice
 
