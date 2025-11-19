@@ -3,7 +3,8 @@
 !! Aggiungi captions a immagini e riferimenti dal testo
 
 
-
+// -----------------------------------
+// ------ WORD SPECIFICATIONS --------
 Font: Cambria
 Codice: Courier New
 Capitoli: 22pt
@@ -13,11 +14,11 @@ Titoli paragrafi: 14pt
 Testo: 12pt
 4 righe fra sottosezioni diverse
 Spazio interlinea: 1,40
+// -----------------------------------
 
 
 
-
-TITOLO:
+TITOLO: 
    Progettazione di un nodo FastFlow per integrazione di acceleratori
 
 Indice
