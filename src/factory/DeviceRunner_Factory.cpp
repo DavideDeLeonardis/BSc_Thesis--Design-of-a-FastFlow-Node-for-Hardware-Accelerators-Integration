@@ -46,6 +46,7 @@ std::unique_ptr<IDeviceRunner> create_runner_for_device(const std::string &devic
       auto accelerator = std::make_unique<Fpga_Accelerator>(kernel_path, kernel_name);
       return std::make_unique<AcceleratorPipelineRunner>(std::move(accelerator));
    }
+   
 #endif
 
    throw std::invalid_argument("Invalid device type '" + device_type + "' for this OS.");
