@@ -18,7 +18,7 @@ AcceleratorPipelineRunner::AcceleratorPipelineRunner(std::unique_ptr<IAccelerato
 /**
  * @brief Orchestra l'intera pipeline FastFlow per l'offloading su un acceleratore. Crea i due
  * nodi della pipeline FF (Emitter, ff_node_acc_t). Riceve l'acceleratore già inizializzato.
- * Avvia la pipeline. Misura e raccoglie i tempi di esecuzione e il numero di task completati.
+ * Avvia la pipeline. Raccoglie e misura i tempi di esecuzione e il numero di task completati.
  */
 ComputeResult AcceleratorPipelineRunner::execute(size_t N, size_t NUM_TASKS) {
    // Dati per ottenere il conteggio finale dei task processati.
