@@ -13,7 +13,7 @@ void Cpu_OMP_Runner::execute_parallel_loop(long start, long end) {
 // Dice al compilatore di parallelizzare il ciclo for distribuendolo tra i thread disponibili.
 #pragma omp parallel for
    for (long i = start; i < end; ++i) {
-      // Chiama l'helper della classe base che contiene la logica del kernel
+      // Chiama l'helper della classe base che contiene la logica di calcolo del kernel.
       this->execute_kernel_work(i);
    }
 }
