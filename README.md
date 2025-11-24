@@ -62,19 +62,19 @@ Measurements were performed on two distinct compute hosts:
 ## Software Stack and Versions
 
 ### Compiler
-- **MacOS:** Clang version 20.1.7 [20] (Target: x86_64-apple-darwin24.6.0)
-- **Linux:** GCC 15.1.0 [21]
+- **MacOS:** Clang version 20.1.7 (Target: x86_64-apple-darwin24.6.0)
+- **Linux:** GCC 15.1.0
 
 ### Libraries and Toolchain
-- **FastFlow:** version 3.0.0 [10]
+- **FastFlow:** version 3.0.0 
   Used to implement the pipeline on nodes and for performance comparison on Apple M2 Pro CPU and Intel CPU.
-- **OpenMP:** version 4.5 [15]
+- **OpenMP:** version 4.5
   Used for performance comparison on Linux CPU.
-- **Vitis Toolchain:** version v2023.1 [8]
+- **Vitis Toolchain:** version v2023.1
   Used for High-Level Synthesis on FPGA.
-- **OpenCL API:** version 1.2 [9]
+- **OpenCL API:** version 1.2
   Used for interfacing with Apple M2 Pro GPU and FPGA.
-- **XRT Drivers:** version 2.16.204 [19]
+- **XRT Drivers:** version 2.16.204
   Xilinx runtime drivers.
 ---
 
